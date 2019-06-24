@@ -20,10 +20,10 @@ def playersToExamine():
 
     return playerid
 
-def playersWar(playerid):
+def playersWar(playerid, n):
     master_list = []
 
-    for i in range(5):
+    for i in range(n):
         single_player = []
         url = "https://www.fangraphs.com/statss.aspx?playerid=" + playerid[i][1]
         r = requests.get(url)
@@ -37,7 +37,7 @@ def playersWar(playerid):
                 trs = tbody.find_all("tr")
                 for tr in trs:
                     tds = tr.find_all('td')
-                    for i in range(1):
+                    for j in range(1):
 
                         try: #we are using "try" because the table is not well formatted. This allows the program to continue after encountering an error.
                             war = tds[-1].get_text() # This structure isolate the item by its column in the table and converts it into a string.
@@ -46,22 +46,25 @@ def playersWar(playerid):
 
                         except:
                             continue
-        single_player.pop(-1)
+        if len(single_player) !=0:
+            single_player.pop(-1)
         master_list.append(single_player)
     return master_list
 
 def warDictionary(playerid, master_list):
     dictionary_lst = []
-    for i in range(5):
+    for i in range(len(master_list)):
         player = {"name": playerid[i][0],
         "war": master_list[i]}
         dictionary_lst.append(player)
-        print(player)
     return dictionary_lst
 
 def main():
+    n = int(input("How many top players would you like to examine? "))
     playerid = playersToExamine()
-    master_list = playersWar(playerid)
+    master_list = playersWar(playerid, n)
     master_dict = warDictionary(playerid, master_list)
+    print(master_dict)
+
 
 main()
