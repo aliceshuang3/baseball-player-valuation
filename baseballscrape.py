@@ -27,20 +27,20 @@ def playersToExamine():
     return playerid
 
 def scrapeHTML(playerid):
-    if not os.path.exists("HTML_Files"):
-        os.makedirs("HTML_Files")
+    if not os.path.exists("top_300_HTML_Files"):
+        os.makedirs("top_300_HTML_Files")
 
     for i in range(len(playerid)):
         url = "https://www.fangraphs.com/statss.aspx?playerid=" + playerid[i][1]
         r = requests.get(url)
 
-        with open("HTML_Files/" + playerid[i][1]+".html", "w") as html_file:
+        with open("top_300_HTML_Files/" + playerid[i][1]+".html", "w") as html_file:
             html_file.write(r.text)
 
 def scrapeWAR():
-    rel_path = "HTML_Files/"
+    rel_path = "top_300_HTML_Files/"
     columns = ['id','season', 'war']
-    csv_out = 'test.csv'
+    csv_out = 'top_300_players.csv'
 
     with open(csv_out, 'w') as csv_file:
     # uses dictionary writer method of csv library and
@@ -48,7 +48,7 @@ def scrapeWAR():
         new_csv = csv.DictWriter(csv_file,fieldnames=columns)
         new_csv.writeheader()
 
-        for i in os.listdir('HTML_Files'):
+        for i in os.listdir('top_300_HTML_Files'):
             if i[-5:] == ".html":
                 with open(rel_path + i,'r') as curr_file:
                     soup = bs(curr_file,'lxml')
