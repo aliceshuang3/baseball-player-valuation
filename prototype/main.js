@@ -10,6 +10,7 @@ const width = window.innerWidth,
 let data = [],
     currData = [],
     data2 = [],
+    chartData = [],
     currFilter;
 
 // d3 elements
@@ -21,6 +22,7 @@ const svg = d3.select('svg')
 // append d3 layers
 let players = svg.append('g').attr('id','players');
 let points = svg.append('g').attr('id','points');
+let charts = svg.append('g').attr('id','charts');
 
 // create axes
 const xscale = d3.scaleLinear()
@@ -74,6 +76,61 @@ svg.append('text')
    .attr('transform','rotate(270)')
    .text('Wins Above k WAR')
 
+// load chart data
+loadChartData('data/tableData.csv');
+//console.log(chartData);
+
+var highlightTable;
+var highlightRows;
+// make chart
+d3.text("data/tableData.csv").then(function(datasetText) {
+  var rows  = d3.csvParseRows(datasetText),
+      table = d3.select('body').append('table')
+                .style("border-collapse", "collapse")
+                .style("border", "2px black solid");
+      highlightTable = table;
+      highlightRows = rows;
+
+  // headers
+  table.append("thead").append("tr")
+    .selectAll("th")
+    .data(rows[0])
+    .enter().append("th")
+    .text(function(d) { return d; })
+    .style("border", "1px black solid")
+    .style("padding", "5px")
+    .style("background-color", "lightgray")
+    .style("font-weight", "bold")
+    .style("text-transform", "uppercase");
+  console.log(rows[1][0]);
+  // data
+  table.append("tbody")
+    .selectAll("tr").data(rows.slice(1))
+    .enter().append("tr")
+    .on('click', function(d) {
+      let r = d3.select(this).data()[0][0];
+      let x = d3.selectAll('path').data();
+
+      for (var i = 0; i < 54; i+=18) {
+        //console.log(r);
+        //console.log(d3.selectAll('path').data()[i].name);
+        if (r == d3.selectAll('path').data()[i].name) {
+          console.log('yes'); // do something when the names match for row clicked and curve
+          console.log(i);
+
+        }
+      }
+    })
+    .selectAll("td")
+    .data(function(d){return d;})
+    .enter().append("td")
+    .style("border", "1px black solid")
+    .style("padding", "5px")
+    .text(function(d){return d;})
+    .style("font-size", "12px");
+
+});
+
 // load csv files
 loadData('data/ruthData.csv');
 loadData('data/cleanJeter.csv');
@@ -82,16 +139,16 @@ loadData('data/cleanYastrzemski.csv');
 loadFiles(); // to be implemented
 
 // set domain and range for loaded data for curves
-var xScale = d3.scaleLinear()
+const xScale = d3.scaleLinear()
                .domain([-2,15])
                .range([50, width]);
 
-var yScale = d3.scaleLinear()
+const yScale = d3.scaleLinear()
                .domain([0, 220])
                .range([height - 50, 0]);
 
 // create curve with k as the x value and cumulative war as the y value
- var lineFunction = d3.line()
+ const lineFunction = d3.line()
       .x(function(d) { return xScale(d.k); })
       .y(function(d) { return yScale(d.war); })
       .curve(d3.curveMonotoneX); // turn line into curve
@@ -153,6 +210,23 @@ function loadData(file) {
       console.log(d);
       data2 = d;
       drawChart2();
+  });
+}
+
+// loads data for chart
+function loadChartData(file) {
+  d3.csv(file, function(d){
+      return {
+          name: d.NAME.trim(),
+          team: d.TEAM.trim(),
+          pos: d.POS.trim(),
+          hof: d.HOF.trim(),
+          war: Number(d.WAR.trim())
+      }
+  }).then(function(d){
+      console.log(d);
+      chartData = d;
+      drawTable();
   });
 }
 
@@ -226,6 +300,13 @@ function drawChart2(){
             d3.select(this)
               .style('stroke', 'turquoise')
           })
+          .on('click', function(d) { // clicking on each curve highlights corresponding row in table 
+            for (var i = 0; i < 7; i++) {
+              if (d.name == highlightRows[i][0]) {
+                d3.selectAll('tr:nth-child(' + i + ')').style('background-color','turquoise');
+              }
+            }
+          })
 
 // create tooltip for dots on curve
 const tooltip = d3.select('body')
@@ -266,5 +347,14 @@ currVals.enter()
 
   currVals.exit()
     .remove();
+
+}
+
+// draws chart with data corresponding to curves
+function drawTable() {
+
+  let currChart = charts.selectAll('.chart')
+                        .data(chartData)
+
 
 }
