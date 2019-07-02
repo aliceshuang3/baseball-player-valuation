@@ -11,6 +11,7 @@ let data = [],
     currData = [],
     data2 = [],
     chartData = [],
+    cleanData = [],
     currFilter;
 
 // d3 elements
@@ -136,7 +137,7 @@ loadData('data/ruthData.csv');
 loadData('data/cleanJeter.csv');
 loadData('data/cleanYastrzemski.csv');
 
-loadFiles(); // to be implemented
+loadBigData('data/top_300_players.csv');
 
 // set domain and range for loaded data for curves
 const xScale = d3.scaleLinear()
@@ -187,17 +188,6 @@ const yScale = d3.scaleLinear()
 
 /* HELPER FUNCTIONS */
 
-// calls loadData on every file in a given folder
-function loadFiles(folder) {
-  // d3.csv('/data', function(error, fileArray) {
-  //   var q = d3.queue();
-  //   fileArray.forEach(function(d) {
-  //     q = q.defer(d3.csv, d);
-  //   });
-  //   q.await(loadData(fileArray[0]));
-  // });
-}
-
 // loads data for a given csv data file
 function loadData(file) {
   d3.csv(file, function(d){
@@ -210,6 +200,32 @@ function loadData(file) {
       console.log(d);
       data2 = d;
       drawChart2();
+  });
+}
+
+let sum;
+let idArray = [],
+    players2 = [],
+    arr = [],
+    kFiltered = [],
+    warFiltered = [],
+    finalDataArr = [];
+
+// loads data for a big csv data file
+function loadBigData(file) {
+  d3.csv(file, function(d){
+    // put all player ids in an array for parsing
+    idArray.push(Number(d.id));
+
+      return {
+          id: Number(d.id.trim()),
+          season: Number(d.season.trim()),
+          war: Number(d.war.trim())
+      }
+  }).then(function(d){
+      //console.log(d);
+      cleanData = d;
+      calculateWar();
   });
 }
 
@@ -229,6 +245,44 @@ function loadChartData(file) {
       drawTable();
   });
 }
+
+
+
+// filter csv data to calculate cumulative war values
+function calculateWar() {
+  arr.push(idArray[0])
+  for (var i=1; i<5237; i++) {
+    if (idArray[i] != idArray[i-1]){
+      arr.push(idArray[i])
+    }
+  }
+  // loop through each of the 300 players
+  for (var i=0; i<arr.length - 1; i++) {
+    // put all rows for 1 player in players2 array
+    players2 = cleanData.filter(function(d) { return d.id == arr[i]})
+
+    // for each k value, filter out the rows with war > k for that 1 player
+    for (var k=-2; k<16; k++) {
+      kFiltered = players2.filter(function(d) { return d.war > k});
+      warFiltered = kFiltered.map(function(d) { return d.war - k}); // subtract k from each season war
+      sum = (warFiltered.reduce(function(total,num) { return total + num}, 0)).toFixed(1); // sum all the season wars
+
+      // construct object with cumulative war values for graphing
+      let finalData = {};
+      finalData['k'] = k;
+      finalData['war'] = sum;
+      finalData['name'] = arr[i];
+      finalDataArr.push(finalData);
+
+    }
+    data2 = finalDataArr;
+    finalDataArr = [];
+    drawChart2();
+  }
+}
+
+
+
 
 // draws rectangles viz, adapted from Nabil's circle example
 function drawChart(){
@@ -279,7 +333,7 @@ function drawChart2(){
           .append("path")
           .attr("d", lineFunction(data2))
           .attr("stroke", "turquoise")
-          .attr("stroke-width", 2)
+          .attr("stroke-width", 1)
           .attr("fill", "none")
           .on('mouseover', function(d) {
             tooltipLine.transition().duration(200)
@@ -300,7 +354,7 @@ function drawChart2(){
             d3.select(this)
               .style('stroke', 'turquoise')
           })
-          .on('click', function(d) { // clicking on each curve highlights corresponding row in table 
+          .on('click', function(d) { // clicking on each curve highlights corresponding row in table
             for (var i = 0; i < 7; i++) {
               if (d.name == highlightRows[i][0]) {
                 d3.selectAll('tr:nth-child(' + i + ')').style('background-color','turquoise');
@@ -321,10 +375,10 @@ currVals.enter()
         .append('circle')
         .attr('cx', d => xScale(d.k))
         .attr('cy', d => yScale(d.war))
-        .attr('r', 5)
+        .attr('r', 3)
         .attr('fill', 'turquoise')
         .on('mouseover', function(d) {
-          tooltip.transition().duration(200)
+          tooltip.transition().duration(50)
             .style('opacity', .9)
           tooltip.html(d.k + ', ' + d.war)
             .style('left', (d3.event.pageX+10) + 'px')
@@ -335,14 +389,14 @@ currVals.enter()
             .style('font-size','14px')
           d3.select(this)
             .style('fill','blue')
-            .style('r', 7)
+            .style('r', 5)
         })
         .on('mouseout', function(d) {
-          tooltip.transition().duration(200)
+          tooltip.transition().duration(50)
             .style('opacity', 0)
           d3.select(this)
             .style('fill', 'turquoise')
-            .style('r', 5)
+            .style('r', 3)
         })
 
   currVals.exit()
