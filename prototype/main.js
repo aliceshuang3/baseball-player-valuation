@@ -13,6 +13,7 @@ let data = [],
     chartData = [],
     cleanData = [],
     addData = [],
+    currData2 = [],
     currFilter;
 
 // d3 elements
@@ -25,6 +26,7 @@ const svg = d3.select('svg')
 let players = svg.append('g').attr('id','players');
 let points = svg.append('g').attr('id','points');
 let charts = svg.append('g').attr('id','charts');
+let checkboxes = svg.append('g').attr('id','checkboxes');
 
 // create axes
 const xscale = d3.scaleLinear()
@@ -134,9 +136,9 @@ d3.text("data/tableData.csv").then(function(datasetText) {
 });
 
 // load csv files
-loadData('data/ruthData.csv');
-loadData('data/cleanJeter.csv');
-loadData('data/cleanYastrzemski.csv');
+// loadData('data/ruthData.csv');
+// loadData('data/cleanJeter.csv');
+// loadData('data/cleanYastrzemski.csv');
 
 loadBigData('data/top_300_players.csv');
 
@@ -187,6 +189,10 @@ const yScale = d3.scaleLinear()
 //     drawChart();
 //
 // });
+
+// listeners
+// hall of fame checkbox
+
 
 /* HELPER FUNCTIONS */
 
@@ -271,10 +277,9 @@ function loadChartData(file) {
 }
 
 
-let idArray2 = [],
-    inAdditional = [];
-
 let found;
+let hof = [];
+let checked = false;
 // filter csv data to calculate cumulative war values
 function calculateWar() {
   arr.push(idArray[0])
@@ -284,12 +289,8 @@ function calculateWar() {
     }
   }
 
-  for (var j=0; j<addData.length; j++) {
-    idArray2.push(addData[j].id1);
-  }
-
   // loop through each of the 300 players
-  for (var i=0; i<arr.length - 1; i++) {
+  for (var i=0; i<arr.length-1; i++) {
     // put all rows for 1 player in players2 array
     players2 = cleanData.filter(function(d) { return d.id == arr[i]})
 
@@ -316,18 +317,45 @@ function calculateWar() {
       // if ids match for two datasets get the name for the player
       if (found >= 0) {
         finalData['name'] = addData[found].name;
+        finalData['hof'] = addData[found].hof;
       } else {
         finalData['name'] = arr[i];
+        finalData['hof'] = 'not found';
       }
 
       finalDataArr.push(finalData);
 
   }
 
+  currData2 = finalDataArr;
+  data2 = currData2;
+  console.log(finalDataArr.hof);
+  hof = finalDataArr.filter(function(d) { return d.hof == true})
+  //console.log(hof);
+  finalDataArr = [];
 
-    data2 = finalDataArr;
-    finalDataArr = [];
-    drawChart2();
+  drawChart2('pink',data2);
+  drawChart2('turquoise',hof);
+
+  // d3.select('#hof-filter input').on('change', function() {
+  //   cb = d3.select(this);
+    // if(checked == true) {
+    //   console.log('checked');
+    //   // for (var i=0; i <currData2.length; i++) {
+    //   //   if (currData2[i].hof == 'true') {
+    //   //     hof.push(currData2[i]);
+    //   //   }
+    //   // }
+    //   //data2 = currData2.filter(d => d.hof == true);
+    //   drawChart2('magenta',hof);
+    // } else {
+    //   console.log('unchecked');
+    //   //data2 = currData2;
+    //   drawChart2('pink',data2);
+    // }
+  // })
+
+    //drawChart2('pink', data2);
 }
 
 }
@@ -368,9 +396,9 @@ function drawChart(){
 }
 
 // draws curves of wins above k WAR vs. k
-function drawChart2(){
+function drawChart2(color, array){
   let currVals = points.selectAll('.point')
-          .data(data2)
+          .data(array)
 
   // create tooltip for the curve
   const tooltipLine = d3.select('body')
@@ -383,8 +411,8 @@ function drawChart2(){
   // draw curves, mousing over shows name of player + changes color
   currVals.enter()
           .append("path")
-          .attr("d", lineFunction(data2))
-          .attr("stroke", "turquoise")
+          .attr("d", lineFunction(array))
+          .attr("stroke", color)
           .attr("stroke-width", 1)
           .attr("fill", "none")
           .on('mouseover', function(d) {
@@ -404,7 +432,7 @@ function drawChart2(){
             tooltipLine.transition().duration(200)
               .style('opacity', 0)
             d3.select(this)
-              .style('stroke', 'turquoise')
+              .style('stroke', color)
           })
           .on('click', function(d) { // clicking on each curve highlights corresponding row in table
             for (var i = 0; i < 7; i++) {
@@ -428,7 +456,7 @@ currVals.enter()
         .attr('cx', d => xScale(d.k))
         .attr('cy', d => yScale(d.war))
         .attr('r', 3)
-        .attr('fill', 'turquoise')
+        .attr('fill', color)
         .on('mouseover', function(d) {
           tooltip.transition().duration(50)
             .style('opacity', .9)
@@ -447,11 +475,13 @@ currVals.enter()
           tooltip.transition().duration(50)
             .style('opacity', 0)
           d3.select(this)
-            .style('fill', 'turquoise')
+            .style('fill', color)
             .style('r', 3)
         })
 
   currVals.exit()
+    .transition(500)
+    .attr('opacity',0)
     .remove();
 
 }
