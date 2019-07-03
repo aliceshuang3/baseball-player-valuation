@@ -12,6 +12,7 @@ let data = [],
     data2 = [],
     chartData = [],
     cleanData = [],
+    addData = [],
     currFilter;
 
 // d3 elements
@@ -139,6 +140,7 @@ loadData('data/cleanYastrzemski.csv');
 
 loadBigData('data/top_300_players.csv');
 
+
 // set domain and range for loaded data for curves
 const xScale = d3.scaleLinear()
                .domain([-2,15])
@@ -211,6 +213,7 @@ let idArray = [],
     warFiltered = [],
     finalDataArr = [];
 
+
 // loads data for a big csv data file
 function loadBigData(file) {
   d3.csv(file, function(d){
@@ -224,10 +227,31 @@ function loadBigData(file) {
       }
   }).then(function(d){
       //console.log(d);
+      loadBigData2('data/top_300_additional_info_players.csv');
       cleanData = d;
-      calculateWar();
+
   });
 }
+
+// load additional top 300 player data
+function loadBigData2(file) {
+  d3.csv(file, function(d) {
+
+    return {
+      name: d.Name.trim(),
+      id1: Number(d.FGL.trim()),
+      id2: Number(d.MLB.trim()),
+      team: d.Team.trim(),
+      pos: d.Position.trim(),
+      hof: Boolean(d.IN_HOF.trim())
+    }
+  }).then(function(d) {
+    addData = d;
+    calculateWar();
+  })
+
+}
+
 
 // loads data for chart
 function loadChartData(file) {
@@ -247,7 +271,10 @@ function loadChartData(file) {
 }
 
 
+let idArray2 = [],
+    inAdditional = [];
 
+let found;
 // filter csv data to calculate cumulative war values
 function calculateWar() {
   arr.push(idArray[0])
@@ -256,6 +283,11 @@ function calculateWar() {
       arr.push(idArray[i])
     }
   }
+
+  for (var j=0; j<addData.length; j++) {
+    idArray2.push(addData[j].id1);
+  }
+
   // loop through each of the 300 players
   for (var i=0; i<arr.length - 1; i++) {
     // put all rows for 1 player in players2 array
@@ -271,15 +303,35 @@ function calculateWar() {
       let finalData = {};
       finalData['k'] = k;
       finalData['war'] = sum;
-      finalData['name'] = arr[i];
+
+      let found = -1;
+      // if player id is in additional players data get index in that data
+      for (var n=0; n<addData.length; n++) {
+        if (arr[i] == addData[n].id1) {
+          found = n;
+          // console.log('yes');
+          // console.log(n);
+        }
+      }
+      // if ids match for two datasets get the name for the player
+      if (found >= 0) {
+        finalData['name'] = addData[found].name;
+      } else {
+        finalData['name'] = arr[i];
+      }
+
       finalDataArr.push(finalData);
 
-    }
+  }
+
+
     data2 = finalDataArr;
     finalDataArr = [];
     drawChart2();
-  }
 }
+
+}
+
 
 
 
