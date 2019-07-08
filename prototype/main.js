@@ -80,10 +80,6 @@ svg.append('text')
    .attr('transform','rotate(270)')
    .text('Wins Above k WAR')
 
-// load chart data
-loadChartData('data/tableData.csv');
-//console.log(chartData);
-
 var highlightTable;
 var highlightRows;
 // make chart
@@ -249,31 +245,13 @@ function loadBigData2(file) {
       id2: Number(d.MLB.trim()),
       team: d.Team.trim(),
       pos: d.Position.trim(),
-      hof: Boolean(d.IN_HOF.trim())
+      hof: d.IN_HOF.trim()
     }
   }).then(function(d) {
     addData = d;
     calculateWar();
   })
 
-}
-
-
-// loads data for chart
-function loadChartData(file) {
-  d3.csv(file, function(d){
-      return {
-          name: d.NAME.trim(),
-          team: d.TEAM.trim(),
-          pos: d.POS.trim(),
-          hof: d.HOF.trim(),
-          war: Number(d.WAR.trim())
-      }
-  }).then(function(d){
-      console.log(d);
-      chartData = d;
-      drawTable();
-  });
 }
 
 
@@ -329,13 +307,13 @@ function calculateWar() {
 
   currData2 = finalDataArr;
   data2 = currData2;
-  console.log(finalDataArr.hof);
-  hof = finalDataArr.filter(function(d) { return d.hof == true})
+  hof = finalDataArr.filter(function(d) { return d.hof == 'TRUE'})
   //console.log(hof);
   finalDataArr = [];
 
   drawChart2('pink',data2);
   drawChart2('turquoise',hof);
+  console.log(data2);
 
   // d3.select('#hof-filter input').on('change', function() {
   //   cb = d3.select(this);
@@ -483,14 +461,5 @@ currVals.enter()
     .transition(500)
     .attr('opacity',0)
     .remove();
-
-}
-
-// draws chart with data corresponding to curves
-function drawTable() {
-
-  let currChart = charts.selectAll('.chart')
-                        .data(chartData)
-
 
 }
