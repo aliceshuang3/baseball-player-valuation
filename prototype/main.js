@@ -12,6 +12,8 @@ let data = [],
     data2 = [],
     chartData = [],
     cleanData = [],
+    addData = [],
+    currData2 = [],
     currFilter;
 
 // d3 elements
@@ -24,6 +26,7 @@ const svg = d3.select('svg')
 let players = svg.append('g').attr('id','players');
 let points = svg.append('g').attr('id','points');
 let charts = svg.append('g').attr('id','charts');
+let checkboxes = svg.append('g').attr('id','checkboxes');
 
 // create axes
 const xscale = d3.scaleLinear()
@@ -77,10 +80,6 @@ svg.append('text')
    .attr('transform','rotate(270)')
    .text('Wins Above k WAR')
 
-// load chart data
-loadChartData('data/tableData.csv');
-//console.log(chartData);
-
 var highlightTable;
 var highlightRows;
 // make chart
@@ -133,11 +132,12 @@ d3.text("data/tableData.csv").then(function(datasetText) {
 });
 
 // load csv files
-loadData('data/ruthData.csv');
-loadData('data/cleanJeter.csv');
-loadData('data/cleanYastrzemski.csv');
+// loadData('data/ruthData.csv');
+// loadData('data/cleanJeter.csv');
+// loadData('data/cleanYastrzemski.csv');
 
 loadBigData('data/top_300_players.csv');
+
 
 // set domain and range for loaded data for curves
 const xScale = d3.scaleLinear()
@@ -186,6 +186,10 @@ const yScale = d3.scaleLinear()
 //
 // });
 
+// listeners
+// hall of fame checkbox
+
+
 /* HELPER FUNCTIONS */
 
 // loads data for a given csv data file
@@ -211,6 +215,7 @@ let idArray = [],
     warFiltered = [],
     finalDataArr = [];
 
+
 // loads data for a big csv data file
 function loadBigData(file) {
   d3.csv(file, function(d){
@@ -224,30 +229,35 @@ function loadBigData(file) {
       }
   }).then(function(d){
       //console.log(d);
+      loadBigData2('data/top_300_additional_info_players.csv');
       cleanData = d;
-      calculateWar();
+
   });
 }
 
-// loads data for chart
-function loadChartData(file) {
-  d3.csv(file, function(d){
-      return {
-          name: d.NAME.trim(),
-          team: d.TEAM.trim(),
-          pos: d.POS.trim(),
-          hof: d.HOF.trim(),
-          war: Number(d.WAR.trim())
-      }
-  }).then(function(d){
-      console.log(d);
-      chartData = d;
-      drawTable();
-  });
+// load additional top 300 player data
+function loadBigData2(file) {
+  d3.csv(file, function(d) {
+
+    return {
+      name: d.Name.trim(),
+      id1: Number(d.FGL.trim()),
+      id2: Number(d.MLB.trim()),
+      team: d.Team.trim(),
+      pos: d.Position.trim(),
+      hof: d.IN_HOF.trim()
+    }
+  }).then(function(d) {
+    addData = d;
+    calculateWar();
+  })
+
 }
 
 
-
+let found;
+let hof = [];
+let checked = false;
 // filter csv data to calculate cumulative war values
 function calculateWar() {
   arr.push(idArray[0])
@@ -256,8 +266,9 @@ function calculateWar() {
       arr.push(idArray[i])
     }
   }
+
   // loop through each of the 300 players
-  for (var i=0; i<arr.length - 1; i++) {
+  for (var i=0; i<arr.length-1; i++) {
     // put all rows for 1 player in players2 array
     players2 = cleanData.filter(function(d) { return d.id == arr[i]})
 
@@ -271,15 +282,62 @@ function calculateWar() {
       let finalData = {};
       finalData['k'] = k;
       finalData['war'] = sum;
-      finalData['name'] = arr[i];
+
+      let found = -1;
+      // if player id is in additional players data get index in that data
+      for (var n=0; n<addData.length; n++) {
+        if (arr[i] == addData[n].id1) {
+          found = n;
+          // console.log('yes');
+          // console.log(n);
+        }
+      }
+      // if ids match for two datasets get the name for the player
+      if (found >= 0) {
+        finalData['name'] = addData[found].name;
+        finalData['hof'] = addData[found].hof;
+      } else {
+        finalData['name'] = arr[i];
+        finalData['hof'] = 'not found';
+      }
+
       finalDataArr.push(finalData);
 
-    }
-    data2 = finalDataArr;
-    finalDataArr = [];
-    drawChart2();
   }
+
+  currData2 = finalDataArr;
+  data2 = currData2;
+  hof = finalDataArr.filter(function(d) { return d.hof == 'TRUE'})
+  //console.log(hof);
+  finalDataArr = [];
+
+  drawChart2('pink',data2);
+  drawChart2('turquoise',hof);
+  console.log(data2);
+
+  // d3.select('#hof-filter input').on('change', function() {
+  //   cb = d3.select(this);
+    // if(checked == true) {
+    //   console.log('checked');
+    //   // for (var i=0; i <currData2.length; i++) {
+    //   //   if (currData2[i].hof == 'true') {
+    //   //     hof.push(currData2[i]);
+    //   //   }
+    //   // }
+    //   //data2 = currData2.filter(d => d.hof == true);
+    //   drawChart2('magenta',hof);
+    // } else {
+    //   console.log('unchecked');
+    //   //data2 = currData2;
+    //   drawChart2('pink',data2);
+    // }
+  // })
+
+    //drawChart2('pink', data2);
 }
+
+}
+
 
 
 
@@ -316,9 +374,9 @@ function drawChart(){
 }
 
 // draws curves of wins above k WAR vs. k
-function drawChart2(){
+function drawChart2(color, array){
   let currVals = points.selectAll('.point')
-          .data(data2)
+          .data(array)
 
   // create tooltip for the curve
   const tooltipLine = d3.select('body')
@@ -331,8 +389,8 @@ function drawChart2(){
   // draw curves, mousing over shows name of player + changes color
   currVals.enter()
           .append("path")
-          .attr("d", lineFunction(data2))
-          .attr("stroke", "turquoise")
+          .attr("d", lineFunction(array))
+          .attr("stroke", color)
           .attr("stroke-width", 1)
           .attr("fill", "none")
           .on('mouseover', function(d) {
@@ -352,7 +410,7 @@ function drawChart2(){
             tooltipLine.transition().duration(200)
               .style('opacity', 0)
             d3.select(this)
-              .style('stroke', 'turquoise')
+              .style('stroke', color)
           })
           .on('click', function(d) { // clicking on each curve highlights corresponding row in table
             for (var i = 0; i < 7; i++) {
@@ -376,7 +434,7 @@ currVals.enter()
         .attr('cx', d => xScale(d.k))
         .attr('cy', d => yScale(d.war))
         .attr('r', 3)
-        .attr('fill', 'turquoise')
+        .attr('fill', color)
         .on('mouseover', function(d) {
           tooltip.transition().duration(50)
             .style('opacity', .9)
@@ -395,20 +453,13 @@ currVals.enter()
           tooltip.transition().duration(50)
             .style('opacity', 0)
           d3.select(this)
-            .style('fill', 'turquoise')
+            .style('fill', color)
             .style('r', 3)
         })
 
   currVals.exit()
+    .transition(500)
+    .attr('opacity',0)
     .remove();
-
-}
-
-// draws chart with data corresponding to curves
-function drawTable() {
-
-  let currChart = charts.selectAll('.chart')
-                        .data(chartData)
-
 
 }
