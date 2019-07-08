@@ -186,8 +186,7 @@ const yScale = d3.scaleLinear()
 //
 // });
 
-// listeners
-// hall of fame checkbox
+
 
 
 /* HELPER FUNCTIONS */
@@ -258,6 +257,10 @@ function loadBigData2(file) {
 let found;
 let hof = [];
 let checked = false;
+let allHOF = [],
+    pos = [],
+    allPos = [],
+    allPosFilt = [];
 // filter csv data to calculate cumulative war values
 function calculateWar() {
   arr.push(idArray[0])
@@ -271,7 +274,6 @@ function calculateWar() {
   for (var i=0; i<arr.length-1; i++) {
     // put all rows for 1 player in players2 array
     players2 = cleanData.filter(function(d) { return d.id == arr[i]})
-
     // for each k value, filter out the rows with war > k for that 1 player
     for (var k=-2; k<16; k++) {
       kFiltered = players2.filter(function(d) { return d.war > k});
@@ -296,9 +298,11 @@ function calculateWar() {
       if (found >= 0) {
         finalData['name'] = addData[found].name;
         finalData['hof'] = addData[found].hof;
+        finalData['pos'] = addData[found].pos;
       } else {
         finalData['name'] = arr[i];
         finalData['hof'] = 'not found';
+        finalData['pos'] = 'not found';
       }
 
       finalDataArr.push(finalData);
@@ -308,38 +312,53 @@ function calculateWar() {
   currData2 = finalDataArr;
   data2 = currData2;
   hof = finalDataArr.filter(function(d) { return d.hof == 'TRUE'})
-  //console.log(hof);
+  pos = finalDataArr.filter(function(d) { return d.pos != 'not found'})
   finalDataArr = [];
+  if (hof.length > 0) {
+    allHOF.push(hof);
+  }
+  allPos.push(pos);
 
   drawChart2('pink',data2);
-  drawChart2('turquoise',hof);
-  console.log(data2);
-
-  // d3.select('#hof-filter input').on('change', function() {
-  //   cb = d3.select(this);
-    // if(checked == true) {
-    //   console.log('checked');
-    //   // for (var i=0; i <currData2.length; i++) {
-    //   //   if (currData2[i].hof == 'true') {
-    //   //     hof.push(currData2[i]);
-    //   //   }
-    //   // }
-    //   //data2 = currData2.filter(d => d.hof == true);
-    //   drawChart2('magenta',hof);
-    // } else {
-    //   console.log('unchecked');
-    //   //data2 = currData2;
-    //   drawChart2('pink',data2);
-    // }
-  // })
-
-    //drawChart2('pink', data2);
 }
 
 }
 
+// hof listener for checkbox
+d3.select('#hof-filter input').on('change', function() {
+  cb = d3.select(this);
+  if(cb.property('checked')) {
+    updateGraph('turquoise',allHOF);
+  } else {
+    updateGraph('pink',allHOF);
+  }
+})
 
+// position listener for drop-down
+d3.select('#pos-filter select').on('change', function() {
+  item = d3.select(this).property('value');
+  if(item != '') {
+    for (var i=0; i<allPos.length; i++) {
+      let temp = allPos[i].filter(function(d) { return d.pos == item});
+      if (temp.length > 0) {
+        allPosFilt.push(temp);
+      }
 
+    }
+    console.log(allPosFilt);
+    updateGraph('pink',allPos);
+    updateGraph('turquoise',allPosFilt);
+    allPosFilt = [];
+  } else {
+    updateGraph('pink',allPos);
+  }
+})
+
+function updateGraph(color,data) {
+  for (var i=0; i<data.length; i++) {
+    drawChart2(color,data[i]);
+  }
+}
 
 
 // draws rectangles viz, adapted from Nabil's circle example
