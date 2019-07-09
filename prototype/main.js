@@ -394,8 +394,7 @@ function drawChart(){
 
 // draws curves of wins above k WAR vs. k
 function drawChart2(color, array){
-  let currVals = points.selectAll('.point')
-          .data(array)
+  let currVals = points.append("g")
 
   // create tooltip for the curve
   const tooltipLine = d3.select('body')
@@ -405,9 +404,18 @@ function drawChart2(color, array){
                     .style('background', 'white')
                     .style('opacity', 0)
 
+  // create tooltip for dots on curve
+  const tooltip = d3.select('body')
+                    .append('div')
+                    .style('position', 'absolute')
+                    .style('padding', '0 10px')
+                    .style('background', 'white')
+                    .style('opacity', 0)
+
   // draw curves, mousing over shows name of player + changes color
-  currVals.enter()
-          .append("path")
+
+  currVals.append("path").data(array)
+          .attr('id','foo')
           .attr("d", lineFunction(array))
           .attr("stroke", color)
           .attr("stroke-width", 1)
@@ -439,17 +447,10 @@ function drawChart2(color, array){
             }
           })
 
-// create tooltip for dots on curve
-const tooltip = d3.select('body')
-                  .append('div')
-                  .style('position', 'absolute')
-                  .style('padding', '0 10px')
-                  .style('background', 'white')
-                  .style('opacity', 0)
 
-// draws dots along curve for data points, mouseover changes color + size + shows coordinates
-currVals.enter()
-        .append('circle')
+  // draws dots along curve for data points, mouseover changes color + size + shows coordinates
+  currVals.selectAll('.point').data(array)
+        .enter().append('circle')
         .attr('cx', d => xScale(d.k))
         .attr('cy', d => yScale(d.war))
         .attr('r', 3)
@@ -476,9 +477,9 @@ currVals.enter()
             .style('r', 3)
         })
 
-  currVals.exit()
-    .transition(500)
-    .attr('opacity',0)
-    .remove();
+currVals.exit()
+        .attr('opacity',0)
+        .remove();
+
 
 }
