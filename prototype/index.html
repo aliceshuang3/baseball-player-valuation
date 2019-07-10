@@ -3,46 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <title>D3BaseballPrototype</title>
-    <!-- <link rel="shortcut icon" href="about:blank"> -->
-    <style>
-        div {
-            height: 20px;
-            width: 150px;
-            position: fixed;
-            padding: 15px;
-            background-color: rgba(255,255,255,.75);
-            /* border-style: solid; */
-            top: 120;
-            left: 80px;
-            }
-        #pos-filter {
-          margin-top: 50px;
-        }
-        #name-filter {
-          margin-top: 100px;
-        }
-        h1 {
-          text-align: center;
-        }
-    </style>
-
-    <style type="text/css">
-    body { font-family: 'Helvetica Neue', Helvetica; font-weight: 300; padding: 20px;}
-    th { text-align: left; }
-    th, td { padding: 0 1em 0.5ex 0;}
-    th.center, td.center { text-align: center; }
-    th.num, td.num { text-align: right; }
-    </style>
-
+    <link rel="stylesheet" type="text/css" href="style.css">
 </head>
 <body>
   <h1>Top 300 Baseball Players: WAR Data Visualization</h1>
-
-<!-- <div id="team-filter">
-    <p>TEAM FILTER</p>
-    <input type="text"></input>
-    <button></button>
-</div> -->
 
   <div id="hof-filter">
     <input type='checkbox' class='checkbox'><label>Hall of Fame</label>
@@ -69,7 +33,6 @@
   </div>
 
 <svg></svg>
-
 
 </body>
 <script src="https://d3js.org/d3.v5.min.js"></script>

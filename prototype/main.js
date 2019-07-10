@@ -3,31 +3,47 @@ Prototype - building off Nabil's example: https://gist.github.com/bulbil/474ed23
 Alice Huang 6/26/19
 */
 
-// set up variables
+/*****************************************************************************/
+// VARIABLES
 const width = window.innerWidth,
       height = window.innerHeight;
 
-let data = [],
-    currData = [],
-    data2 = [],
-    chartData = [],
-    cleanData = [],
-    addData = [],
-    currData2 = [],
-    currFilter;
+let data2 = [], cleanData = [], addData = [], // used in loading data
+    highlightTable, highlightRows, // used in table
+    sum, idArray = [], players2 = [], arr = [], kFiltered = [], warFiltered = [], finalDataArr = [], // used in calculateWar
+    found, hof = [], allHOF = [], pos = [], allPos = [], allPosFilt = [];
 
-// d3 elements
+/*****************************************************************************/
+// D3 ELEMENTS
 const svg = d3.select('svg')
               .attr('width', width)
               .attr('height', height)
               .attr('border', "1px solid #000");
 
 // append d3 layers
-let players = svg.append('g').attr('id','players');
 let points = svg.append('g').attr('id','points');
-let charts = svg.append('g').attr('id','charts');
-let checkboxes = svg.append('g').attr('id','checkboxes');
 
+/*****************************************************************************/
+// LOAD DATA
+loadBigData('data/top_300_players.csv'); // csv scraped by Bilal/Helen from fangraphs
+
+// set domain and range for loaded data for curves
+const xScale = d3.scaleLinear()
+               .domain([-2,15])
+               .range([50, width]);
+
+const yScale = d3.scaleLinear()
+               .domain([0, 220])
+               .range([height - 50, 0]);
+
+// create curve with k as the x value and cumulative war as the y value
+ const lineFunction = d3.line()
+      .x(function(d) { return xScale(d.k); })
+      .y(function(d) { return yScale(d.war); })
+      .curve(d3.curveMonotoneX); // turn line into curve
+
+/*****************************************************************************/
+// SET-UP
 // create axes
 const xscale = d3.scaleLinear()
                  .domain([-2,15]) // domain for k that code2.r uses
@@ -42,6 +58,10 @@ const x_axis = d3.axisBottom()
                  .ticks(32); // set number of ticks, determines scale
 
 const x_axis_translate = height - 50 // constant for moving x-axis
+
+const y_axis = d3.axisLeft()
+                 .scale(yscale)
+                 .ticks(20);
 
 // add x-axis
 svg.append("g")
@@ -58,10 +78,6 @@ svg.append('text')
    .attr('x',width/2 + 50)
    .attr('y',height - 15)
    .text('k (WAR/season)')
-
-const y_axis = d3.axisLeft()
-                 .scale(yscale)
-                 .ticks(20);
 
 // add y-axis
 svg.append("g")
@@ -80,140 +96,12 @@ svg.append('text')
    .attr('transform','rotate(270)')
    .text('Wins Above k WAR')
 
-var highlightTable;
-var highlightRows;
-// make chart
-d3.text("data/tableData.csv").then(function(datasetText) {
-  var rows  = d3.csvParseRows(datasetText),
-      table = d3.select('body').append('table')
-                .style("border-collapse", "collapse")
-                .style("border", "2px black solid");
-      highlightTable = table;
-      highlightRows = rows;
+/************************************/
+// create data table
+drawTable();
 
-  // headers
-  table.append("thead").append("tr")
-    .selectAll("th")
-    .data(rows[0])
-    .enter().append("th")
-    .text(function(d) { return d; })
-    .style("border", "1px black solid")
-    .style("padding", "5px")
-    .style("background-color", "lightgray")
-    .style("font-weight", "bold")
-    .style("text-transform", "uppercase");
-  console.log(rows[1][0]);
-  // data
-  table.append("tbody")
-    .selectAll("tr").data(rows.slice(1))
-    .enter().append("tr")
-    .on('click', function(d) {
-      let r = d3.select(this).data()[0][0];
-      let x = d3.selectAll('path').data();
-
-      for (var i = 0; i < 54; i+=18) {
-        //console.log(r);
-        //console.log(d3.selectAll('path').data()[i].name);
-        if (r == d3.selectAll('path').data()[i].name) {
-          console.log('yes'); // do something when the names match for row clicked and curve
-          console.log(i);
-
-        }
-      }
-    })
-    .selectAll("td")
-    .data(function(d){return d;})
-    .enter().append("td")
-    .style("border", "1px black solid")
-    .style("padding", "5px")
-    .text(function(d){return d;})
-    .style("font-size", "12px");
-
-});
-
-// load csv files
-// loadData('data/ruthData.csv');
-// loadData('data/cleanJeter.csv');
-// loadData('data/cleanYastrzemski.csv');
-
-loadBigData('data/top_300_players.csv');
-
-
-// set domain and range for loaded data for curves
-const xScale = d3.scaleLinear()
-               .domain([-2,15])
-               .range([50, width]);
-
-const yScale = d3.scaleLinear()
-               .domain([0, 220])
-               .range([height - 50, 0]);
-
-// create curve with k as the x value and cumulative war as the y value
- const lineFunction = d3.line()
-      .x(function(d) { return xScale(d.k); })
-      .y(function(d) { return yScale(d.war); })
-      .curve(d3.curveMonotoneX); // turn line into curve
-
-// load baseball csv, from Nabil's example
-
-// d3.csv('fangraphs-leaderboard.csv', function(d){
-//
-//     return {
-//         name: d.Name.trim(),
-//         team: d.Team.trim(),
-//         war: Number(d.WAR.trim()),
-//         playerid: Number(d.playerid.trim())
-//     }
-// }).then( function(d) {
-//
-//     data = d;
-//     currData = data;
-//     console.log("Baseball currData");
-//     console.log(currData);
-//
-//     drawChart();
-// });
-//
-// // register any listeners
-// d3.select('#team-filter input').on('change', function(){
-//
-//     currFilter = d3.select(this).node().value;
-//     currData = currFilter.trim() !== '' ?
-//         data.filter( d => d.team == currFilter ) : data;
-//
-//     // update
-//     drawChart();
-//
-// });
-
-
-
-
-/* HELPER FUNCTIONS */
-
-// loads data for a given csv data file
-function loadData(file) {
-  d3.csv(file, function(d){
-      return {
-          k: Number(d.K.trim()),
-          war: Number(d.WAR.trim()),
-          name: d.NAME
-      }
-  }).then(function(d){
-      console.log(d);
-      data2 = d;
-      drawChart2();
-  });
-}
-
-let sum;
-let idArray = [],
-    players2 = [],
-    arr = [],
-    kFiltered = [],
-    warFiltered = [],
-    finalDataArr = [];
-
+/*****************************************************************************/
+// HELPER FUNCTIONS
 
 // loads data for a big csv data file
 function loadBigData(file) {
@@ -227,13 +115,12 @@ function loadBigData(file) {
           war: Number(d.war.trim())
       }
   }).then(function(d){
-      //console.log(d);
       loadBigData2('data/top_300_additional_info_players.csv');
-      cleanData = d;
-
+      cleanData = d; // save data to be accessed later
   });
 }
 
+/************************************/
 // load additional top 300 player data
 function loadBigData2(file) {
   d3.csv(file, function(d) {
@@ -250,23 +137,17 @@ function loadBigData2(file) {
     addData = d;
     calculateWar();
   })
-
 }
 
-
-let found;
-let hof = [];
-let checked = false;
-let allHOF = [],
-    pos = [],
-    allPos = [],
-    allPosFilt = [];
+/************************************/
 // filter csv data to calculate cumulative war values
 function calculateWar() {
   arr.push(idArray[0])
+
+  // filter to get array with one entry per player id
   for (var i=1; i<5237; i++) {
-    if (idArray[i] != idArray[i-1]){
-      arr.push(idArray[i])
+    if (idArray[i] != idArray[i-1]){ // check if current id is same as previous one
+      arr.push(idArray[i]) // if new array aka next player, add to array of players
     }
   }
 
@@ -290,11 +171,9 @@ function calculateWar() {
       for (var n=0; n<addData.length; n++) {
         if (arr[i] == addData[n].id1) {
           found = n;
-          // console.log('yes');
-          // console.log(n);
         }
       }
-      // if ids match for two datasets get the name for the player
+      // if ids match for two datasets get the name, hof, pos for the player
       if (found >= 0) {
         finalData['name'] = addData[found].name;
         finalData['hof'] = addData[found].hof;
@@ -305,121 +184,62 @@ function calculateWar() {
         finalData['pos'] = 'not found';
       }
 
-      finalDataArr.push(finalData);
+      finalDataArr.push(finalData); // create array of objects
 
   }
 
-  currData2 = finalDataArr;
-  data2 = currData2;
+  data2 = finalDataArr;
+  // filter for hof players
   hof = finalDataArr.filter(function(d) { return d.hof == 'TRUE'})
+  // make array with all players that have a valid position
   pos = finalDataArr.filter(function(d) { return d.pos != 'not found'})
+  // clear the object array
   finalDataArr = [];
+
   if (hof.length > 0) {
     allHOF.push(hof);
   }
   allPos.push(pos);
 
+  // draw a curve using final clean data
   drawChart2('pink',data2);
 }
 
 }
 
-// hof listener for checkbox
-d3.select('#hof-filter input').on('change', function() {
-  cb = d3.select(this);
-  if(cb.property('checked')) {
-    updateGraph('turquoise',allHOF);
-  } else {
-    updateGraph('pink',allHOF);
-  }
-})
-
-// position listener for drop-down
-d3.select('#pos-filter select').on('change', function() {
-  item = d3.select(this).property('value');
-  if(item != '') {
-    for (var i=0; i<allPos.length; i++) {
-      let temp = allPos[i].filter(function(d) { return d.pos == item});
-      if (temp.length > 0) {
-        allPosFilt.push(temp);
-      }
-
-    }
-    console.log(allPosFilt);
-    updateGraph('pink',allPos);
-    updateGraph('turquoise',allPosFilt);
-    allPosFilt = [];
-  } else {
-    updateGraph('pink',allPos);
-  }
-})
-
+/************************************/
+// draw curves in appropriate color for parameter filters
 function updateGraph(color,data) {
   for (var i=0; i<data.length; i++) {
     drawChart2(color,data[i]);
   }
 }
 
-
-// draws rectangles viz, adapted from Nabil's circle example
-function drawChart(){
-
-    let currPlayers = players.selectAll('.player')
-            .data(currData)
-
-    currPlayers.enter()
-        .append('rect')
-        .attr('class','player')
-        .attr('x', function(d,i) { return Math.random() * width; } )
-        .attr('y', function(d,i) { return Math.random() * height; } )
-        //.attr('r', function(d,i) { return 15; } )
-        .attr('opacity', d => d.war/75 )
-        .attr('fill', d => d3.interpolateSpectral( d.war/75 ))
-        .attr('width', 10)
-        .attr('height', 10);
-
-    currPlayers.exit()
-        .transition(500)
-        .attr('opacity',0)
-        .remove();
-
-    d3.selectAll('.player').on('click', function(d){
-        console.log(d.name)
-        console.log(d.team)
-        console.log(d.playerid)
-        console.log('\n')
-    });
-
-}
-
+/************************************/
 // draws curves of wins above k WAR vs. k
 function drawChart2(color, array){
   let currVals = points.append("g")
 
+  // makes sure not to draw multiple paths per player
   const nestedArray = d3.nest()
     .key(function(d) { return d.name})
     .entries(array);
 
-console.log(nestedArray);
-
   currVals.append("path").data(nestedArray)
           .attr('class','curves')
           .attr('id','lines')
-          .attr("d", function(d) { return lineFunction(d.values);})
+          .attr("d", function(d) { return lineFunction(d.values);}) // call earlier curve function
           .attr("stroke", color)
           .attr("stroke-width", 1)
           .attr("fill", "none")
-          .on('mouseover', function(d) {
+          .on('mouseover', function(d) { // mouseover changes color of curve, shows tooltip with name of player
             makeToolTip();
             tooltip.transition().duration(200)
+            .attr('id','tool1')
             .style('opacity', .9)
             tooltip.html(d.values[0].name)
             .style('left', (d3.event.pageX+10) + 'px')
             .style('top', (d3.event.pageY-50) + 'px')
-            .style('width','150px').style('height','18px')
-            .style('border-style','solid').style('border-color','blue')
-            .style('text-align','center').style('font-family','sans-serif')
-            .style('font-size','14px')
             d3.select(this)
               .style('stroke', 'blue')
           })
@@ -438,7 +258,7 @@ console.log(nestedArray);
           })
 
 
-  // draws dots along curve for data points, mouseover changes color + size + shows coordinates
+  // draws dots along curve for data points
   currVals.selectAll('.point').data(array)
         .enter().append('circle')
         .attr('class','curves')
@@ -447,17 +267,14 @@ console.log(nestedArray);
         .attr('cy', d => yScale(d.war))
         .attr('r', 3)
         .attr('fill', color)
-        .on('mouseover', function(d) {
+        .on('mouseover', function(d) { // mouseover changes color + size + shows coordinates
           makeToolTip();
           tooltip.transition().duration(50)
+          .attr('id','tool2')
             .style('opacity', .9)
           tooltip.html(d.k + ', ' + d.war)
             .style('left', (d3.event.pageX+10) + 'px')
             .style('top', (d3.event.pageY-50) + 'px')
-            .style('width','70px').style('height','18px')
-            .style('border-style','solid').style('border-color','blue')
-            .style('text-align','center').style('font-family','sans-serif')
-            .style('font-size','14px')
           d3.select(this)
             .style('fill','blue')
             .style('r', 5)
@@ -476,13 +293,85 @@ console.log(nestedArray);
 
 }
 
+/************************************/
 let tooltip;
 function makeToolTip() {
   // create tooltip for the curve and dots
   tooltip = d3.select('body')
                     .append('span')
-                    .style('position', 'absolute')
-                    .style('padding', '0 10px')
-                    .style('background', 'white')
-                    .style('opacity', 0)
 }
+
+/************************************/
+// create data table
+function drawTable() {
+  d3.text("data/tableData.csv").then(function(datasetText) {
+    let rows  = d3.csvParseRows(datasetText),
+        table = d3.select('body').append('table')
+
+        highlightTable = table;
+        highlightRows = rows;
+
+    // headers
+    table.append("thead").append("tr")
+      .selectAll("th")
+      .data(rows[0])
+      .enter().append("th")
+      .text(function(d) { return d; })
+
+    // data
+    table.append("tbody")
+      .selectAll("tr").data(rows.slice(1))
+      .enter().append("tr")
+      .on('click', function(d) {
+        let r = d3.select(this).data()[0][0];
+        let x = d3.selectAll('path').data();
+
+        // to do: click on row to highlight corr. curve
+        for (var i = 0; i < 54; i+=18) {
+          //console.log(r);
+          //console.log(d3.selectAll('path').data()[i].name);
+          if (r == d3.selectAll('path').data()[i].name) {
+            console.log('yes'); // do something when the names match for row clicked and curve
+            console.log(i);
+
+          }
+        }
+      })
+      .selectAll("td")
+      .data(function(d){return d;})
+      .enter().append("td")
+      .text(function(d){return d;})
+
+  });
+}
+
+/*****************************************************************************/
+// LISTENERS
+// hof listener for checkbox
+d3.select('#hof-filter input').on('change', function() {
+  cb = d3.select(this);
+  if(cb.property('checked')) {
+    updateGraph('turquoise',allHOF); // if checkbox checked, draw hof players in turquoise
+  } else {
+    updateGraph('pink',allHOF);
+  }
+})
+
+// position listener for drop-down
+d3.select('#pos-filter select').on('change', function() {
+  item = d3.select(this).property('value'); // get drop-down selection
+  if(item != '') {
+    for (var i=0; i<allPos.length; i++) {
+      let temp = allPos[i].filter(function(d) { return d.pos == item});
+      if (temp.length > 0) {
+        allPosFilt.push(temp); // array of all players of that position 
+      }
+
+    }
+    updateGraph('pink',allPos);
+    updateGraph('turquoise',allPosFilt);
+    allPosFilt = [];
+  } else {
+    updateGraph('pink',allPos);
+  }
+})
