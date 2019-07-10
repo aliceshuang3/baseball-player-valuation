@@ -396,34 +396,24 @@ function drawChart(){
 function drawChart2(color, array){
   let currVals = points.append("g")
 
-  // create tooltip for the curve
-  const tooltipLine = d3.select('body')
-                    .append('div')
-                    .style('position', 'absolute')
-                    .style('padding', '0 10px')
-                    .style('background', 'white')
-                    .style('opacity', 0)
+  const nestedArray = d3.nest()
+    .key(function(d) { return d.name})
+    .entries(array);
 
-  // create tooltip for dots on curve
-  const tooltip = d3.select('body')
-                    .append('div')
-                    .style('position', 'absolute')
-                    .style('padding', '0 10px')
-                    .style('background', 'white')
-                    .style('opacity', 0)
+console.log(nestedArray);
 
-  // draw curves, mousing over shows name of player + changes color
-
-  currVals.append("path").data(array)
-          .attr('id','foo')
-          .attr("d", lineFunction(array))
+  currVals.append("path").data(nestedArray)
+          .attr('class','curves')
+          .attr('id','lines')
+          .attr("d", function(d) { return lineFunction(d.values);})
           .attr("stroke", color)
           .attr("stroke-width", 1)
           .attr("fill", "none")
           .on('mouseover', function(d) {
-            tooltipLine.transition().duration(200)
+            makeToolTip();
+            tooltip.transition().duration(200)
             .style('opacity', .9)
-            tooltipLine.html(d.name)
+            tooltip.html(d.values[0].name)
             .style('left', (d3.event.pageX+10) + 'px')
             .style('top', (d3.event.pageY-50) + 'px')
             .style('width','150px').style('height','18px')
@@ -434,7 +424,7 @@ function drawChart2(color, array){
               .style('stroke', 'blue')
           })
           .on('mouseout', function(d) {
-            tooltipLine.transition().duration(200)
+            tooltip.transition().duration(200)
               .style('opacity', 0)
             d3.select(this)
               .style('stroke', color)
@@ -451,11 +441,14 @@ function drawChart2(color, array){
   // draws dots along curve for data points, mouseover changes color + size + shows coordinates
   currVals.selectAll('.point').data(array)
         .enter().append('circle')
+        .attr('class','curves')
+        .attr('id','dots')
         .attr('cx', d => xScale(d.k))
         .attr('cy', d => yScale(d.war))
         .attr('r', 3)
         .attr('fill', color)
         .on('mouseover', function(d) {
+          makeToolTip();
           tooltip.transition().duration(50)
             .style('opacity', .9)
           tooltip.html(d.k + ', ' + d.war)
@@ -477,9 +470,19 @@ function drawChart2(color, array){
             .style('r', 3)
         })
 
-currVals.exit()
-        .attr('opacity',0)
-        .remove();
+    currVals.exit()
+          .attr('opacity',0)
+          .remove();
 
+}
 
+let tooltip;
+function makeToolTip() {
+  // create tooltip for the curve and dots
+  tooltip = d3.select('body')
+                    .append('span')
+                    .style('position', 'absolute')
+                    .style('padding', '0 10px')
+                    .style('background', 'white')
+                    .style('opacity', 0)
 }
