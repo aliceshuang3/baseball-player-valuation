@@ -3,42 +3,36 @@
 <head>
     <meta charset="UTF-8">
     <title>D3BaseballPrototype</title>
-    <!-- <link rel="shortcut icon" href="about:blank"> -->
-    <style>
-        div {
-            height: 20px;
-            width: 150px;
-            position: fixed;
-            padding: 15px;
-            background-color: rgba(255,255,255,.75);
-            top: 120;
-            left: 80px;
-            }
-    </style>
-
-    <style type="text/css">
-    body { font-family: 'Helvetica Neue', Helvetica; font-weight: 300; padding: 20px;}
-    th { text-align: left; }
-    th, td { padding: 0 1em 0.5ex 0;}
-    th.center, td.center { text-align: center; }
-    th.num, td.num { text-align: right; }
-    </style>
-
+    <link rel="stylesheet" type="text/css" href="style.css">
 </head>
 <body>
-
-<!-- <div id="team-filter">
-    <p>TEAM FILTER</p>
-    <input type="text"></input>
-    <button></button>
-</div> -->
+  <h1>Top 300 Baseball Players: WAR Data Visualization</h1>
 
   <div id="hof-filter">
     <input type='checkbox' class='checkbox'><label>Hall of Fame</label>
   </div>
 
-<svg></svg>
+  <div id="pos-filter">
+    <select name="position">
+      <option value="" selected></option>
+      <option value="RF">RF</option>
+      <option value="LF">LF</option>
+      <option value="CF">CF</option>
+      <option value="SS">SS</option>
+      <option value="2B">2B</option>
+      <option value="OF">OF</option>
+      <option value="1B">1B</option>
+      <option value="3B">3B</option>
+      <option value="C">C</option>
+      <option value="DH">DH</option>
+    </select>
+  </div>
 
+  <div id="name-filter">
+    <input type="text"><label>Name Search</label>
+  </div>
+
+<svg></svg>
 
 </body>
 <script src="https://d3js.org/d3.v5.min.js"></script>
