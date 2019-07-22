@@ -116,6 +116,7 @@ function loadBigData(file) {
       }
   }).then(function(d){
       loadBigData2('data/top_300_additional_info_players.csv');
+      getAllPlayers('data/top_300_additional_info_players.csv')
       cleanData = d; // save data to be accessed later
   });
 }
@@ -343,6 +344,24 @@ function drawTable() {
   });
 }
 
+let allPlayers = []
+
+function getAllPlayers(file){
+  d3.csv(file, function(d){
+    allPlayers.push(d.Name);
+  }).then(function(){
+    var select = d3.select('datalist')
+      .append('select')
+        .attr('class','select')
+        .on('change',onchange);
+    var options = select
+      .selectAll('option')
+        .data(allPlayers).enter()
+        .append('option')
+            .text(function (d) { return d; });
+  })
+}
+
 /*****************************************************************************/
 // LISTENERS
 // hof listener for checkbox
@@ -367,7 +386,6 @@ d3.select('#pos-filter select').on('change', function() {
 
     }
     updateGraph('pink',allPos);
-    console.log(allPos)
     updateGraph('turquoise',allPosFilt);
     allPosFilt = [];
   } else {
@@ -375,15 +393,21 @@ d3.select('#pos-filter select').on('change', function() {
   }
 })
 
-// name listener for search bar - TBD
-// const form = d3.select("#name-filter input");
-//   let name;
-//   form.on("change", function(){
-//    let txt = document.getElementById("player-choice").value;
-//    if (txt){
-//      console.log("EXISTS! "+txt);
-//    }else{
-//      console.log("DNE")
-//    }
-//
-//  });
+// name listener for search bar
+d3.select("#name-filter input").on("change", function(){
+   let txt = document.getElementById("player-choice").value;
+   if (txt){
+     console.log("EXISTS! "+txt);
+   }else{
+     console.log("DNE")
+   }
+   for (var i=0; i<allPos.length; i++) {
+     let temp = allPos[i].filter(function(d) { return d.name == txt});
+     if (temp.length > 0) {
+       allPosFilt.push(temp);
+     }
+   }
+   updateGraph('red', allPosFilt)
+   allPosFilt = []
+
+ });
