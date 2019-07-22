@@ -250,8 +250,9 @@ function drawChart2(color, array){
               .style('stroke', color)
           })
           .on('click', function(d) { // clicking on each curve highlights corresponding row in table
-            for (var i = 0; i < 7; i++) {
-              if (d.name == highlightRows[i][0]) {
+            console.log(d.values[0].name)
+            for (var i = 0; i < 276; i++) {
+              if (d.values[0].name == highlightRows[i][0]) {
                 d3.selectAll('tr:nth-child(' + i + ')').style('background-color','turquoise');
               }
             }
@@ -304,7 +305,7 @@ function makeToolTip() {
 /************************************/
 // create data table
 function drawTable() {
-  d3.text("data/tableData.csv").then(function(datasetText) {
+  d3.text("data/top_300_additional_info_players.csv").then(function(datasetText) {
     let rows  = d3.csvParseRows(datasetText),
         table = d3.select('body').append('table')
 
@@ -364,7 +365,7 @@ d3.select('#pos-filter select').on('change', function() {
     for (var i=0; i<allPos.length; i++) {
       let temp = allPos[i].filter(function(d) { return d.pos == item});
       if (temp.length > 0) {
-        allPosFilt.push(temp); // array of all players of that position 
+        allPosFilt.push(temp); // array of all players of that position
       }
 
     }
@@ -375,3 +376,16 @@ d3.select('#pos-filter select').on('change', function() {
     updateGraph('pink',allPos);
   }
 })
+
+// name listener for search bar - TBD
+// const form = d3.select("#name-filter input");
+//   let name;
+//   form.on("change", function(){
+//    let txt = document.getElementById("player-choice").value;
+//    if (txt){
+//      console.log("EXISTS! "+txt);
+//    }else{
+//      console.log("DNE")
+//    }
+//
+//  });
