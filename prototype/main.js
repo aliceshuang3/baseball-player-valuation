@@ -30,11 +30,11 @@ loadBigData('data/top_300_players.csv'); // csv scraped by Bilal/Helen from fang
 // set domain and range for loaded data for curves
 const xScale = d3.scaleLinear()
                .domain([-2,15])
-               .range([50, width]);
+               .range([0.2 * width, 0.8 * width]);
 
 const yScale = d3.scaleLinear()
                .domain([0, 220])
-               .range([height - 50, 0]);
+               .range([0.75 * height, 0]);
 
 // create curve with k as the x value and cumulative war as the y value
  const lineFunction = d3.line()
@@ -47,21 +47,23 @@ const yScale = d3.scaleLinear()
 // create axes
 const xscale = d3.scaleLinear()
                  .domain([-2,15]) // domain for k that code2.r uses
-                 .range([50, width]) // positioning axis from edge of window
+                 .range([0.2 * width, 0.8 * width]) // positioning axis from edge of window
 
 const yscale = d3.scaleLinear()
                  .domain([0, 220])
-                 .range([height - 50, 0])
+                 .range([0.75 * height, 0])
 
 const x_axis = d3.axisBottom()
                  .scale(xscale)
                  .ticks(32); // set number of ticks, determines scale
 
-const x_axis_translate = height - 50 // constant for moving x-axis
+const x_axis_translate = 0.75 * height // constant for moving x-axis
 
 const y_axis = d3.axisLeft()
                  .scale(yscale)
                  .ticks(20);
+
+const y_axis_translate = 0.2 * width
 
 // add x-axis
 svg.append("g")
@@ -81,7 +83,7 @@ svg.append('text')
 
 // add y-axis
 svg.append("g")
-   .attr("transform", "translate(50, 0)")
+   .attr("transform", "translate(" + y_axis_translate + ", 0)")
    .attr('stroke-width',2)
    .call(y_axis);
 
