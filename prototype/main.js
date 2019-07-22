@@ -227,7 +227,7 @@ function drawChart2(color, array){
 
   currVals.append("path").data(nestedArray)
           .attr('class','curves')
-          .attr('id','lines')
+          .attr('id', function(d) { return 'a-' + d.values[0].id;})
           .attr("d", function(d) { return lineFunction(d.values);}) // call earlier curve function
           .attr("stroke", color)
           .attr("stroke-width", 1)
@@ -250,13 +250,13 @@ function drawChart2(color, array){
               .style('stroke', color)
           })
           .on('click', function(d) { // clicking on each curve highlights corresponding row in table
-            console.log(d.values[0].name)
             for (var i = 0; i < 276; i++) {
               if (d.values[0].name == highlightRows[i][0]) {
                 d3.selectAll('tr:nth-child(' + i + ')').style('background-color','turquoise');
               }
             }
           })
+
 
 
   // draws dots along curve for data points
@@ -324,19 +324,16 @@ function drawTable() {
       .selectAll("tr").data(rows.slice(1))
       .enter().append("tr")
       .on('click', function(d) {
-        let r = d3.select(this).data()[0][0];
-        let x = d3.selectAll('path').data();
-
-        // to do: click on row to highlight corr. curve
-        for (var i = 0; i < 54; i+=18) {
-          //console.log(r);
-          //console.log(d3.selectAll('path').data()[i].name);
-          if (r == d3.selectAll('path').data()[i].name) {
-            console.log('yes'); // do something when the names match for row clicked and curve
-            console.log(i);
-
+        // search through all curves to find matching name, highlight curve
+        let n = d3.select(this).data()[0][0];
+        for (var i=0; i<allPos.length; i++) {
+          let temp = allPos[i].filter(function(d) { return d.name == n});
+          if (temp.length > 0) {
+            allPosFilt.push(temp);
           }
         }
+        updateGraph('red', allPosFilt)
+        allPosFilt = []
       })
       .selectAll("td")
       .data(function(d){return d;})
@@ -370,6 +367,7 @@ d3.select('#pos-filter select').on('change', function() {
 
     }
     updateGraph('pink',allPos);
+    console.log(allPos)
     updateGraph('turquoise',allPosFilt);
     allPosFilt = [];
   } else {
