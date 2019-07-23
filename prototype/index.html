@@ -8,6 +8,10 @@
 <body>
   <h1>Top 300 Baseball Players: WAR Data Visualization</h1>
 
+  <!-- <div id="restart">
+    <button>Clear All</button>
+  </div> -->
+
   <div id="hof-filter">
     <input type='checkbox' class='checkbox'><label>Hall of Fame</label>
   </div>
@@ -34,7 +38,20 @@
     <datalist id="player-filter"></datalist>
   </div>
 
-  <div id="table"></div>
+  <div id="table">
+    <p id="description">
+      <ol>
+        <li>Hover over a curve to see who the player is</li>
+        <li>Hover over a dot to see that player's wins above k war value at that value of k</li>
+        <li>Click on a curve to see that player highlighted in the table (you may need to scroll down in the table)</li>
+        <li>Click on a row in the table to see that player's curve highlighted</li>
+        <li>Check the hall of fame box to see all hall of fame players (players not in hall of fame fade out)</li>
+        <li>Select a position from the dropdown to see all players that play that position (select the first blank option to deselect all positions)</li>
+        <li>Search for or choose a player in the text field to highlight their curve</li>
+        <li>Refresh the page to clear all highlighting</li>
+      </ol>
+    </p>
+  </div>
 
   <svg></svg>
 

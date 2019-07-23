@@ -11,7 +11,7 @@ const width = window.innerWidth,
 let data2 = [], cleanData = [], addData = [], // used in loading data
     highlightRows, allPlayers = [], // used in table
     sum, idArray = [], players2 = [], arr = [], kFiltered = [], warFiltered = [], finalDataArr = [], // used in calculateWar
-    found, hof = [], allHOF = [], pos = [], allPos = [], allPosFilt = [];
+    found, hof = [], allHOF = [], pos = [], allPos = [], allPosFilt = [], allCurves = [];
 
 /*****************************************************************************/
 // D3 ELEMENTS
@@ -78,7 +78,7 @@ svg.append('text')
    .attr('font-size','16px')
    .attr('font-family','sans-serif')
    .attr('x', (0.6 * width)/2 + 50)
-   .attr('y', (0.75 * height) + 50)
+   .attr('y', (0.75 * height) + 40)
    .text('k (WAR/season)')
 
 // add y-axis
@@ -94,7 +94,7 @@ svg.append('text')
    .attr('font-size','16px')
    .attr('font-family','sans-serif')
    .attr('x',(-0.75*height)/2)
-   .attr('y',20)
+   .attr('y', 20)
    .attr('transform','rotate(270)')
    .text('Wins Above k WAR')
 
@@ -204,8 +204,11 @@ function calculateWar() {
   }
   allPos.push(pos);
 
+  // add curve to total array
+  allCurves.push(data2);
+
   // draw a curve using final clean data
-  drawChart2('pink',data2);
+  drawChart2('#42aaff',data2);
 }
 
 }
@@ -233,7 +236,7 @@ function drawChart2(color, array){
           .attr('id', function(d) { return 'a-' + d.values[0].id;})
           .attr("d", function(d) { return lineFunction(d.values);}) // call earlier curve function
           .attr("stroke", color)
-          .attr("stroke-width", 1)
+          .attr("stroke-width", 1.5)
           .attr("fill", "none")
           .on('mouseover', function(d) { // mouseover changes color of curve, shows tooltip with name of player
             makeToolTip();
@@ -244,7 +247,7 @@ function drawChart2(color, array){
             .style('left', (d3.event.pageX+10) + 'px')
             .style('top', (d3.event.pageY-50) + 'px')
             d3.select(this)
-              .style('stroke', 'blue')
+              .style('stroke', '#ff1f53')
           })
           .on('mouseout', function(d) {
             tooltip.transition().duration(200)
@@ -255,7 +258,7 @@ function drawChart2(color, array){
           .on('click', function(d) { // clicking on each curve highlights corresponding row in table
             for (var i = 0; i < 276; i++) {
               if (d.values[0].name == highlightRows[i][0]) {
-                d3.selectAll('tbody tr:nth-child(' + i + ')').style('background-color','turquoise');
+                d3.selectAll('tbody tr:nth-child(' + i + ')').style('background-color','#ff1f53');
               }
             }
           })
@@ -269,7 +272,7 @@ function drawChart2(color, array){
         .attr('id','dots')
         .attr('cx', d => xScale(d.k))
         .attr('cy', d => yScale(d.war))
-        .attr('r', 3)
+        .attr('r', 2)
         .attr('fill', color)
         .on('mouseover', function(d) { // mouseover changes color + size + shows coordinates
           makeToolTip();
@@ -280,15 +283,15 @@ function drawChart2(color, array){
             .style('left', (d3.event.pageX+10) + 'px')
             .style('top', (d3.event.pageY-50) + 'px')
           d3.select(this)
-            .style('fill','blue')
-            .style('r', 5)
+            .style('fill','#ff1f53')
+            .style('r', 4)
         })
         .on('mouseout', function(d) {
           tooltip.transition().duration(50)
             .style('opacity', 0)
           d3.select(this)
             .style('fill', color)
-            .style('r', 3)
+            .style('r', 2)
         })
 
     currVals.exit()
@@ -334,7 +337,7 @@ function drawTable() {
             allPosFilt.push(temp);
           }
         }
-        updateGraph('red', allPosFilt)
+        updateGraph('#ff1f53', allPosFilt)
         allPosFilt = []
       })
       .selectAll("td")
@@ -369,9 +372,10 @@ function getAllPlayers(file){
 d3.select('#hof-filter input').on('change', function() {
   cb = d3.select(this);
   if(cb.property('checked')) {
-    updateGraph('turquoise',allHOF); // if checkbox checked, draw hof players in turquoise
+    updateGraph('#deeffc',allCurves);
+    updateGraph('#42aaff',allHOF); // if checkbox checked, highlight hof players
   } else {
-    updateGraph('pink',allHOF);
+    updateGraph('#42aaff',allCurves);
   }
 })
 
@@ -386,29 +390,29 @@ d3.select('#pos-filter select').on('change', function() {
       }
 
     }
-    updateGraph('pink',allPos);
-    updateGraph('turquoise',allPosFilt);
+    updateGraph('#deeffc',allCurves);
+    updateGraph('#42aaff',allPosFilt);
     allPosFilt = [];
   } else {
-    updateGraph('pink',allPos);
+    updateGraph('#42aaff',allCurves);
   }
 })
 
 // name listener for search bar
 d3.select("#name-filter input").on("change", function(){
    let txt = document.getElementById("player-choice").value;
-   if (txt){
-     console.log("EXISTS! "+txt);
-   }else{
-     console.log("DNE")
-   }
    for (var i=0; i<allPos.length; i++) {
      let temp = allPos[i].filter(function(d) { return d.name == txt});
      if (temp.length > 0) {
        allPosFilt.push(temp);
      }
    }
-   updateGraph('red', allPosFilt)
+   updateGraph('#ff1f53', allPosFilt)
    allPosFilt = []
 
  });
+
+ // clear all listener
+ d3.select('#restart button').on('click', function() {
+     updateGraph('#42aaff',allCurves);
+ })
