@@ -7,44 +7,46 @@ div {
     top: 120;
     left: 80px;
     }
+
 #pos-filter {
   margin-top: 50px;
 }
+
 #name-filter {
   margin-top: 100px;
 }
+
 h1 {
   text-align: center;
+  font-size: 25px;
 }
+
 body {
   font-family: 'Helvetica Neue', Helvetica; font-weight: 300; padding: 20px;
 }
+
 th {
-  text-align: left;
+  text-align: center;
   border: 1px black solid;
   padding: 5px;
-  background-color: lightgray;
   font-weight: bold;
+  font-size: 13px;
   text-transform: uppercase;
 }
-th, td {
-  padding: 0 1em 0.5ex 0;
-}
-th.center, td.center {
-  text-align: center;
-}
-th.num, td.num {
-  text-align: right;
-}
+
 td {
   border: 1px black solid;
   padding: 5px;
-  font-size: 12px;
+  font-size: 11px;
+  text-align: center;
 }
+
 table {
   border-collapse: collapse;
   border: 2px black solid;
+  width: 100%;
 }
+
 span {
   position: absolute;
   padding: 0 10px;
@@ -58,12 +60,22 @@ span {
   font-family: sans-serif;
   font-size: 14px;
 }
+
 #tool1 {
   width: 150px;
 }
 
-/* svg {
-  float: center;
-  margin-left: 60px;
-  margin-right: 60px;
-} */
+svg {
+  width: 65%;
+}
+
+#table {
+  border: 1px solid black;
+  float: right;
+  width: 30%;
+  height: 60%;
+  margin-top: 60px;
+  margin-left: 60%;
+  margin-right: 10%;
+  overflow-y: scroll;
+}

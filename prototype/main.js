@@ -9,7 +9,7 @@ const width = window.innerWidth,
       height = window.innerHeight;
 
 let data2 = [], cleanData = [], addData = [], // used in loading data
-    highlightTable, highlightRows, // used in table
+    highlightRows, allPlayers = [], // used in table
     sum, idArray = [], players2 = [], arr = [], kFiltered = [], warFiltered = [], finalDataArr = [], // used in calculateWar
     found, hof = [], allHOF = [], pos = [], allPos = [], allPosFilt = [];
 
@@ -30,7 +30,7 @@ loadBigData('data/top_300_players.csv'); // csv scraped by Bilal/Helen from fang
 // set domain and range for loaded data for curves
 const xScale = d3.scaleLinear()
                .domain([-2,15])
-               .range([0.2 * width, 0.8 * width]);
+               .range([50, 0.6 * width]);
 
 const yScale = d3.scaleLinear()
                .domain([0, 220])
@@ -47,7 +47,7 @@ const yScale = d3.scaleLinear()
 // create axes
 const xscale = d3.scaleLinear()
                  .domain([-2,15]) // domain for k that code2.r uses
-                 .range([0.2 * width, 0.8 * width]) // positioning axis from edge of window
+                 .range([50, 0.6 * width]) // positioning axis from edge of window
 
 const yscale = d3.scaleLinear()
                  .domain([0, 220])
@@ -63,7 +63,7 @@ const y_axis = d3.axisLeft()
                  .scale(yscale)
                  .ticks(20);
 
-const y_axis_translate = 0.2 * width
+const y_axis_translate = 50
 
 // add x-axis
 svg.append("g")
@@ -77,8 +77,8 @@ svg.append('text')
    .attr('text-anchor','end')
    .attr('font-size','16px')
    .attr('font-family','sans-serif')
-   .attr('x',width/2 + 50)
-   .attr('y',height - 15)
+   .attr('x', (0.6 * width)/2 + 50)
+   .attr('y', (0.75 * height) + 50)
    .text('k (WAR/season)')
 
 // add y-axis
@@ -93,7 +93,7 @@ svg.append('text')
    .attr('text-anchor','middle')
    .attr('font-size','16px')
    .attr('font-family','sans-serif')
-   .attr('x',-height/2)
+   .attr('x',(-0.75*height)/2)
    .attr('y',20)
    .attr('transform','rotate(270)')
    .text('Wins Above k WAR')
@@ -118,7 +118,7 @@ function loadBigData(file) {
       }
   }).then(function(d){
       loadBigData2('data/top_300_additional_info_players.csv');
-      getAllPlayers('data/top_300_additional_info_players.csv')
+      getAllPlayers('data/top_300_additional_info_players.csv'); // load player names for name search
       cleanData = d; // save data to be accessed later
   });
 }
@@ -255,7 +255,7 @@ function drawChart2(color, array){
           .on('click', function(d) { // clicking on each curve highlights corresponding row in table
             for (var i = 0; i < 276; i++) {
               if (d.values[0].name == highlightRows[i][0]) {
-                d3.selectAll('tr:nth-child(' + i + ')').style('background-color','turquoise');
+                d3.selectAll('tbody tr:nth-child(' + i + ')').style('background-color','turquoise');
               }
             }
           })
@@ -308,12 +308,11 @@ function makeToolTip() {
 /************************************/
 // create data table
 function drawTable() {
-  d3.text("data/top_300_additional_info_players.csv").then(function(datasetText) {
+  d3.text("data/tableData.csv").then(function(datasetText) {
     let rows  = d3.csvParseRows(datasetText),
-        table = d3.select('body').append('table')
+        table = d3.select('#table').append('table')
 
-        highlightTable = table;
-        highlightRows = rows;
+        highlightRows = rows; // use for highlighting pattern on click for curves
 
     // headers
     table.append("thead").append("tr")
@@ -346,8 +345,8 @@ function drawTable() {
   });
 }
 
-let allPlayers = []
-
+/************************************/
+// add names to name search drop down
 function getAllPlayers(file){
   d3.csv(file, function(d){
     allPlayers.push(d.Name);
