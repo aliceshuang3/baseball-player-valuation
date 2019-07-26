@@ -11,7 +11,7 @@ const width = window.innerWidth,
 let data2 = [], cleanData = [], addData = [], // used in loading data
     highlightRows, allPlayers = [], // used in table
     sum, idArray = [], players2 = [], arr = [], kFiltered = [], warFiltered = [], finalDataArr = [], // used in calculateWar
-    found, hof = [], allHOF = [], pos = [], allPos = [], allPosFilt = [], allCurves = [];
+    tooltip, color, found, hof = [], allHOF = [], pos = [], allPos = [], allPosFilt = [], allCurves = [];
 
 /*****************************************************************************/
 // D3 ELEMENTS
@@ -233,28 +233,12 @@ function drawChart2(color, array){
 
   currVals.append("path").data(nestedArray)
           .attr('class','curves')
-          .attr('id', function(d) { return 'a-' + d.values[0].id;})
           .attr("d", function(d) { return lineFunction(d.values);}) // call earlier curve function
           .attr("stroke", color)
           .attr("stroke-width", 1.5)
           .attr("fill", "none")
-          .on('mouseover', function(d) { // mouseover changes color of curve, shows tooltip with name of player
-            makeToolTip();
-            tooltip.transition().duration(200)
-            .attr('id','tool1')
-            .style('opacity', .9)
-            tooltip.html(d.values[0].name)
-            .style('left', (d3.event.pageX+10) + 'px')
-            .style('top', (d3.event.pageY-50) + 'px')
-            d3.select(this)
-              .style('stroke', '#ff1f53')
-          })
-          .on('mouseout', function(d) {
-            tooltip.transition().duration(200)
-              .style('opacity', 0)
-            d3.select(this)
-              .style('stroke', color)
-          })
+          .on('mouseover', handleMouseOver) // mouseover changes color of curve, shows tooltip with name of player
+          .on('mouseout', handleMouseOut)
           .on('click', function(d) { // clicking on each curve highlights corresponding row in table
             for (var i = 0; i < 276; i++) {
               if (d.values[0].name == highlightRows[i][0]) {
@@ -263,45 +247,57 @@ function drawChart2(color, array){
             }
           })
 
-
-
   // draws dots along curve for data points
   currVals.selectAll('.point').data(array)
         .enter().append('circle')
-        .attr('class','curves')
-        .attr('id','dots')
+        .attr('class','dots')
         .attr('cx', d => xScale(d.k))
         .attr('cy', d => yScale(d.war))
         .attr('r', 2)
         .attr('fill', color)
-        .on('mouseover', function(d) { // mouseover changes color + size + shows coordinates
-          makeToolTip();
-          tooltip.transition().duration(50)
-          .attr('id','tool2')
-            .style('opacity', .9)
-          tooltip.html(d.k + ', ' + d.war)
-            .style('left', (d3.event.pageX+10) + 'px')
-            .style('top', (d3.event.pageY-50) + 'px')
-          d3.select(this)
-            .style('fill','#ff1f53')
-            .style('r', 4)
-        })
-        .on('mouseout', function(d) {
-          tooltip.transition().duration(50)
-            .style('opacity', 0)
-          d3.select(this)
-            .style('fill', color)
-            .style('r', 2)
-        })
+        .on('mouseover', handleMouseOver)
+        .on('mouseout', handleMouseOut)
 
     currVals.exit()
           .attr('opacity',0)
           .remove();
-
 }
 
 /************************************/
-let tooltip;
+// handle mouse events for curves/points 
+function handleMouseOver(d) {
+  makeToolTip();
+  tooltip.transition().duration(200)
+  .attr('id','tool1')
+  .style('opacity', .9)
+  if (this.getAttribute('class') == 'curves') {
+    tooltip.html(d.values[0].name)
+    d3.select(this)
+      .style('stroke', '#ff1f53')
+  } else {
+    tooltip.html(d.k + ', ' + d.war)
+    d3.select(this)
+      .style('fill','#ff1f53')
+      .style('r', 4)
+  }
+  tooltip.style('left', (d3.event.pageX+10) + 'px')
+  .style('top', (d3.event.pageY-50) + 'px')
+}
+
+function handleMouseOut(d) {
+  tooltip.transition().duration(200)
+    .style('opacity', 0)
+  if (this.getAttribute('class') == 'curves') {
+    d3.select(this)
+      .style('stroke', color)
+  } else {
+    d3.select(this)
+      .style('fill', color)
+      .style('r', 2)
+  }
+}
+
+/************************************/
 function makeToolTip() {
   // create tooltip for the curve and dots
   tooltip = d3.select('body')
