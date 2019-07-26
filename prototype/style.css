@@ -3,30 +3,48 @@ div {
     width: 150px;
     position: fixed;
     padding: 15px;
-    background-color: rgba(255,255,255,.75);
+    /* background-color: rgba(255,255,255,.75); */
     top: 120;
     left: 80px;
     }
 
+div.filters, #filters-container {
+  margin-left: 40%;
+  font-size: 12px;
+}
+
 #restart {
-  margin-top: -50px;
+  margin-top: -10px;
+}
+
+#hof-filter {
+  margin-top: 40px;
 }
 
 #pos-filter {
-  margin-top: 50px;
+  margin-top: 90px;
 }
 
 #name-filter {
-  margin-top: 100px;
+  margin-top: 140px;
+}
+
+#filters-container {
+  margin-top: 60px;
+  height: 210px;
+  width: 120px;
+  border: 1px solid black;
 }
 
 h1 {
   text-align: center;
-  font-size: 25px;
+  font-size: 22px;
+  background-color: #e1effa;
 }
 
 body {
-  font-family: 'Helvetica Neue', Helvetica; font-weight: 300; padding: 20px;
+  font-family: 'Helvetica Neue', Helvetica;
+  font-weight: 300; padding: 20px;
 }
 
 th {
@@ -34,7 +52,7 @@ th {
   border: 1px black solid;
   padding: 5px;
   font-weight: bold;
-  font-size: 13px;
+  font-size: 12px;
   text-transform: uppercase;
 }
 
@@ -82,4 +100,6 @@ svg {
   margin-left: 60%;
   margin-right: 10%;
   overflow-y: scroll;
+  font-size: 12px;
+  line-height: 20px;
 }

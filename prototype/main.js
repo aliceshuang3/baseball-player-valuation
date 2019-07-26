@@ -242,7 +242,7 @@ function drawChart2(color, array){
           .on('click', function(d) { // clicking on each curve highlights corresponding row in table
             for (var i = 0; i < 276; i++) {
               if (d.values[0].name == highlightRows[i][0]) {
-                d3.selectAll('tbody tr:nth-child(' + i + ')').style('background-color','#ff1f53');
+                d3.selectAll('tbody tr:nth-child(' + i + ')').style('background-color','#ff1f53').style('color','white');
               }
             }
           })
@@ -361,7 +361,7 @@ function getAllPlayers(file){
             .text(function (d) { return d; });
   })
 }
-let unselected, unselected2, selected, selected2, count = 0;
+
 /*****************************************************************************/
 // LISTENERS
 // hof listener for checkbox
@@ -376,34 +376,25 @@ d3.select('#hof-filter input').on('change', function() {
     d3.selectAll('.dots').filter(function(d) { return d.hof == 'FALSE'; }).style('opacity','1')
   }
 })
-
+// let unselected, unselected2, selected, selected2, count = 0;
 // position listener for drop-down
 d3.select('#pos-filter select').on('change', function() {
-  count += 1;
+  // count += 1;
   item = d3.select(this).property('value'); // get drop-down selection
   console.log(item)
   if(item != '') {
-    // for (var i=0; i<allPos.length; i++) {
-    //   let temp = allPos[i].filter(function(d) { return d.pos == item});
-    //   if (temp.length > 0) {
-    //     allPosFilt.push(temp); // array of all players of that position
-    //   }
-    //
+    // if (count > 1) {
+    //   unselected.filter(function(d) { return d.values[0].pos == item; }).style('opacity','1')
+    // } else {
+      d3.selectAll('.curves').filter(function(d) { return d.values[0].pos == item; }).style('opacity','1')
+      d3.selectAll('.dots').filter(function(d) { return d.pos == item; }).style('opacity','1')
+      d3.selectAll('.curves').filter(function(d) { return d.values[0].pos != item; })
+      .style('opacity','0.2')
+      d3.selectAll('.dots').filter(function(d) { return d.pos != item; })
+      .style('opacity','0.2')
     // }
-    if (count > 1) {
-      unselected.filter(function(d) { return d.values[0].pos == item; }).style('opacity','1')
-    } else {
-      unselected = d3.selectAll('.curves').filter(function(d) { return d.values[0].pos != item; })
-      .style('opacity','0.2')
-      unselected2 = d3.selectAll('.dots').filter(function(d) { return d.pos != item; })
-      .style('opacity','0.2')
-    }
 
-    // updateGraph('#deeffc',allCurves);
-    // updateGraph('#42aaff',allPosFilt);
-    // allPosFilt = [];
   } else {
-    //updateGraph('#42aaff',allCurves);
     d3.selectAll('.curves').filter(function(d) { return d.values[0].pos != item; }).style('opacity','1')
     d3.selectAll('.dots').filter(function(d) { return d.pos != item; }).style('opacity','1')
   }
@@ -418,6 +409,10 @@ d3.select("#name-filter input").on("change", function(){
        allPosFilt.push(temp);
      }
    }
+   // d3.selectAll('.curves').filter(function(d) { return d.values[0].name == txt; })
+   // .style('stroke','#ff1f53')
+   // d3.selectAll('.dots').filter(function(d) { return d.name == txt; })
+   // .style('fill','#ff1f53')
    updateGraph('#ff1f53', allPosFilt)
    allPosFilt = []
 
@@ -425,6 +420,7 @@ d3.select("#name-filter input").on("change", function(){
 
  // clear all listener
  d3.select('#restart button').on('click', function() {
-    d3.selectAll('.curves').style('stroke','orange')
-    d3.selectAll('.dots').style('fill','orange')
+    d3.selectAll('.curves').style('stroke','#42aaff').style('opacity','1')
+    d3.selectAll('.dots').style('fill','#42aaff').style('opacity','1')
+    d3.selectAll('tbody tr').style('background-color', 'white').style('color','black')
  })
