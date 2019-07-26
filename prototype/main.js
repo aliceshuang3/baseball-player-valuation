@@ -264,7 +264,7 @@ function drawChart2(color, array){
 }
 
 /************************************/
-// handle mouse events for curves/points 
+// handle mouse events for curves/points
 function handleMouseOver(d) {
   makeToolTip();
   tooltip.transition().duration(200)
@@ -361,36 +361,51 @@ function getAllPlayers(file){
             .text(function (d) { return d; });
   })
 }
-
+let unselected, unselected2, selected, selected2, count = 0;
 /*****************************************************************************/
 // LISTENERS
 // hof listener for checkbox
 d3.select('#hof-filter input').on('change', function() {
   cb = d3.select(this);
   if(cb.property('checked')) {
-    updateGraph('#deeffc',allCurves);
-    updateGraph('#42aaff',allHOF); // if checkbox checked, highlight hof players
+    // filter out all hof player curves
+    d3.selectAll('.curves').filter(function(d) { return d.values[0].hof == 'FALSE'; }).style('opacity','0.2')
+    d3.selectAll('.dots').filter(function(d) { return d.hof == 'FALSE'; }).style('opacity','0.2')
   } else {
-    updateGraph('#42aaff',allCurves);
+    d3.selectAll('.curves').filter(function(d) { return d.values[0].hof == 'FALSE'; }).style('opacity','1')
+    d3.selectAll('.dots').filter(function(d) { return d.hof == 'FALSE'; }).style('opacity','1')
   }
 })
 
 // position listener for drop-down
 d3.select('#pos-filter select').on('change', function() {
+  count += 1;
   item = d3.select(this).property('value'); // get drop-down selection
+  console.log(item)
   if(item != '') {
-    for (var i=0; i<allPos.length; i++) {
-      let temp = allPos[i].filter(function(d) { return d.pos == item});
-      if (temp.length > 0) {
-        allPosFilt.push(temp); // array of all players of that position
-      }
-
+    // for (var i=0; i<allPos.length; i++) {
+    //   let temp = allPos[i].filter(function(d) { return d.pos == item});
+    //   if (temp.length > 0) {
+    //     allPosFilt.push(temp); // array of all players of that position
+    //   }
+    //
+    // }
+    if (count > 1) {
+      unselected.filter(function(d) { return d.values[0].pos == item; }).style('opacity','1')
+    } else {
+      unselected = d3.selectAll('.curves').filter(function(d) { return d.values[0].pos != item; })
+      .style('opacity','0.2')
+      unselected2 = d3.selectAll('.dots').filter(function(d) { return d.pos != item; })
+      .style('opacity','0.2')
     }
-    updateGraph('#deeffc',allCurves);
-    updateGraph('#42aaff',allPosFilt);
-    allPosFilt = [];
+
+    // updateGraph('#deeffc',allCurves);
+    // updateGraph('#42aaff',allPosFilt);
+    // allPosFilt = [];
   } else {
-    updateGraph('#42aaff',allCurves);
+    //updateGraph('#42aaff',allCurves);
+    d3.selectAll('.curves').filter(function(d) { return d.values[0].pos != item; }).style('opacity','1')
+    d3.selectAll('.dots').filter(function(d) { return d.pos != item; }).style('opacity','1')
   }
 })
 
@@ -410,5 +425,6 @@ d3.select("#name-filter input").on("change", function(){
 
  // clear all listener
  d3.select('#restart button').on('click', function() {
-     updateGraph('#42aaff',allCurves);
+    d3.selectAll('.curves').style('stroke','orange')
+    d3.selectAll('.dots').style('fill','orange')
  })
