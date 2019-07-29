@@ -6,17 +6,24 @@
     <link rel="stylesheet" type="text/css" href="style.css">
 </head>
 <body>
-  <h1>Top 300 Baseball Players: WAR Data Visualization</h1>
+  <div class="fixed-header">
+        <div class="container">
+            <h1>Baseball WAR Visualization</h1>
+        </div>
+  </div>
 
+    <!-- <div class="fixed-footer">
+        <div class="container">Copyright &copy; 2016 Your Company</div>
+    </div> -->
   <!-- <div id="restart">
     <button>Clear All</button>
   </div> -->
 
-  <div id="hof-filter">
+  <div id="hof-filter"class="graph">
     <input type='checkbox' class='checkbox'><label>Hall of Fame</label>
   </div>
 
-  <div id="pos-filter">
+  <div id="pos-filter"class="graph">
     <select name="position">
       <option value="" selected></option>
       <option value="RF">RF</option>
@@ -32,13 +39,13 @@
     </select>
   </div>
 
-  <div id="name-filter">
+  <div id="name-filter"class="graph">
     <label for="player-filter">Choose a Player:</label>
     <input list="player-filter" id="player-choice" name="player-choice" type="text"/>
     <datalist id="player-filter"></datalist>
   </div>
 
-  <div id="table">
+  <div id="table" class="graph">
     <p id="description">
       <ol>
         <li>Hover over a curve to see who the player is</li>
@@ -54,6 +61,23 @@
   </div>
 
   <svg></svg>
+
+
+  <h3 id="title">What is WAR?</h3>
+  <div class="content boxed center-div">
+    <p>
+    WAR stands for Wins Above Replacement. It is used as a metric for determining the value that a player
+  has to a team. The higher a player's WAR value is, the more valuable they are to the team for which they play.
+  There are 3 different ways to calculate a player's WAR score. This project uses FanGraph's WAR
+
+    </p>
+  </div>
+
+  <h3 id="acknowledgements">Acknowledgements</h3>
+  <div class="boxed acknowledgements center-div boxed">
+
+    <p>We'd like to thank ...</p>
+  </div>
 
 
 

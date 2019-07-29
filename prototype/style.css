@@ -1,12 +1,16 @@
-div {
+div.graph{
     height: 20px;
     width: 150px;
-    position: fixed;
+    position: absolute;
     padding: 15px;
     background-color: rgba(255,255,255,.75);
     top: 120;
     left: 80px;
-    }
+}
+.boxed {
+  border: 1px solid black ;
+  margin-bottom: 100px;
+}
 
 #restart {
   margin-top: -50px;
@@ -19,15 +23,58 @@ div {
 #name-filter {
   margin-top: 100px;
 }
+.center-div
+{
+     margin: 0 auto;
+     width: 90%;
+}
 
+p {
+  text-align: center;
+}
+body{
+  padding-top: 60px;
+  padding-bottom: 40px;
+}
+.fixed-header, .fixed-footer{
+    width: 100%;
+    background: #333;
+    padding: 10px 0;
+    color: #fff;
+}
+.fixed-header{
+  top: 0;
+}
+.fixed-footer{
+  bottom: 0;
+}
+.container{
+  width: 80%;
+  margin: 0 auto; /* Center the DIV horizontally */
+}
+nav a{
+  color: #fff;
+  text-decoration: none;
+  padding: 7px 25px;
+  display: inline-block;
+}
+nav{
+  text-align: center;
+}
 h1 {
   text-align: center;
   font-size: 25px;
 }
 
-body {
-  font-family: 'Helvetica Neue', Helvetica; font-weight: 300; padding: 20px;
+h3{
+  font-weight: bold;
+  text-align: center;
+  margin-top: 0.83em;
+  margin-bottom: 0.83em;
 }
+/* body {
+  font-family: 'Helvetica Neue', Helvetica; font-weight: 300; padding: 20px;
+} */
 
 th {
   text-align: center;
