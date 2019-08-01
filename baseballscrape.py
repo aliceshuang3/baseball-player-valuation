@@ -162,9 +162,9 @@ def playerList():
             row[columns[3]] = data['search_player_all']['queryResults']['row']['team_full']
             row[columns[4]] = data['search_player_all']['queryResults']['row']['position']
             if name in hof_Array:
-                row[columns[5]] = True
+                row[columns[5]] = "Yes"
             else:
-                row[columns[5]] = False
+                row[columns[5]] = "No"
 
 
 

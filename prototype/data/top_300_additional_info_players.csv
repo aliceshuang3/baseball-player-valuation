@@ -1,4 +1,4 @@
-Name,FGL,MLB,Team,Position,IN_HOF
+Name,FGL ID,MLB ID,Team,Position,IN_HOF
 Babe Ruth,1011327,121578,Atlanta Braves,RF,TRUE
 Barry Bonds,1109,111188,San Francisco Giants,LF,FALSE
 Willie Mays,1008315,118495,New York Mets,CF,TRUE
@@ -23,7 +23,7 @@ Cap Anson,1000272,110284,Chicago Cubs,1B,TRUE
 Al Kaline,1006678,116822,Detroit Tigers,RF,TRUE
 Wade Boggs,1001124,111153,Tampa Bay Rays,3B,TRUE
 Albert Pujols,1177,405395,Los Angeles Angels,1B,FALSE
-Roger Connor,1002537,112589,St. Louis Cardinals,1B,TRUE
+Roger ConFALSEr,1002537,112589,St. Louis Cardinals,1B,TRUE
 Chipper Jones,97,116706,Atlanta Braves,3B,TRUE
 George Brett,1001400,111437,Kansas City Royals,3B,TRUE
 George Davis,1003049,113106,Chicago White Sox,SS,TRUE
@@ -126,7 +126,7 @@ Bill Terry,1012927,123203,San Francisco Giants,1B,TRUE
 Fred McGriff,293,118730,Tampa Bay Rays,1B,FALSE
 Robin Ventura,854,123697,Los Angeles Dodgers,3B,FALSE
 Jimmy Sheckard,1011843,122100,Cincinnati Reds,OF,FALSE
-Robinson Cano,3269,429664,New York Mets,2B,FALSE
+Robinson CaFALSE,3269,429664,New York Mets,2B,FALSE
 Sal Bando,1000505,110526,Milwaukee Brewers,3B,FALSE
 Bill Dickey,1003271,113340,New York Yankees,C,TRUE
 Jeff Kent,1119,116999,Los Angeles Dodgers,2B,FALSE
@@ -142,7 +142,7 @@ Billy Herman,1005692,115809,Pittsburgh Pirates,2B,TRUE
 Joe Kelley,1006776,116926,Atlanta Braves,LF,TRUE
 Harry Stovey,1012586,122845,Los Angeles Dodgers,1B,FALSE
 Ken Boyer,1001283,111321,Los Angeles Dodgers,3B,FALSE
-Norm Cash,1002043,112090,Detroit Tigers,1B,FALSE
+FALSErm Cash,1002043,112090,Detroit Tigers,1B,FALSE
 Vladimir Guerrero,778,115223,Baltimore Orioles,RF,TRUE
 Ted Simmons,1011986,122247,Atlanta Braves,C,FALSE
 Gabby Hartnett,1005458,115572,San Francisco Giants,C,TRUE
@@ -157,10 +157,10 @@ Tommy Leach,1007428,117582,Pittsburgh Pirates,CF,FALSE
 Chet Lemon,1007518,117669,Detroit Tigers,CF,FALSE
 Will Clark,1002318,112345,St. Louis Cardinals,1B,FALSE
 George Sisler,1012021,122280,Atlanta Braves,1B,TRUE
-Enos Slaughter,1012060,122319,Atlanta Braves,RF,TRUE
+EFALSEs Slaughter,1012060,122319,Atlanta Braves,RF,TRUE
 Larry Doby,1003346,113411,Chicago White Sox,CF,TRUE
 Jim Rice,1010897,121140,Boston Red Sox,LF,TRUE
-Minnie Minoso,1008984,119176,Chicago White Sox,LF,FALSE
+Minnie MiFALSEso,1008984,119176,Chicago White Sox,LF,FALSE
 Mike Cameron,1070,111904,Miami Marlins,CF,FALSE
 David Ortiz,745,120074,Boston Red Sox,DH,FALSE
 Mickey Cochrane,1002384,112437,Detroit Tigers,C,TRUE
@@ -170,7 +170,7 @@ Heinie Groh,1005078,115179,Pittsburgh Pirates,3B,FALSE
 Orlando Cepeda,1002103,112157,Kansas City Royals,1B,TRUE
 Sam Rice,1010900,121137,Cleveland Indians,RF,TRUE
 Tony Lazzeri,1007422,117577,San Francisco Giants,2B,TRUE
-Cesar Cedeno,1002100,112153,Los Angeles Dodgers,CF,FALSE
+Cesar CedeFALSE,1002100,112153,Los Angeles Dodgers,CF,FALSE
 Matt Holliday,1873,407812,Colorado Rockies,LF,FALSE
 Jason Giambi,818,114739,Cleveland Indians,1B,FALSE
 Edd Roush,1011247,121497,Cincinnati Reds,CF,TRUE
@@ -265,7 +265,7 @@ Hanley Ramirez,8001,434670,Cleveland Indians,1B,FALSE
 Devon White,1013862,124164,Milwaukee Brewers,CF,FALSE
 Davey Lopes,1007750,117912,Houston Astros,2B,FALSE
 Darryl Strawberry,1012606,122864,New York Yankees,OF,FALSE
-Nomar Garciaparra,190,114596,Oakland Athletics,SS,FALSE
+FALSEmar Garciaparra,190,114596,Oakland Athletics,SS,FALSE
 Roger Peckinpaugh,1010116,120344,Chicago White Sox,SS,FALSE
 Ben Chapman,1002141,112205,Philadelphia Phillies,CF,FALSE
 Earle Combs,1002478,112533,New York Yankees,CF,TRUE
