@@ -327,7 +327,7 @@ function drawTable() {
           rows[i].splice(1, 1);
           if (rows[i][2] == "TRUE"){
             rows[i][2] = "Yes"
-          } else{
+          } else if (rows[i][2] == "FALSE"){
             rows[i][2] = "No"
           }
         }

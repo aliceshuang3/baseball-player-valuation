@@ -2,10 +2,9 @@
 
 WAR (Wins Above Replacement) is a metric that tries to "measure all of a baseball player's on-field contributions using a single numerical value." A player's individual WAR score is meant to represent how valuable a player is to a team. The goal of this project is to provide a tool that can represent a player's cumulative WAR value over a certain value (k). This will make it easier to compare the WAR of two or more players.
 
-
 ### Creating the Project
 
-At the beginning of the project, we had to familiarize ourselves with what WAR was and so we used the following websites: 
+At the beginning of the project, we had to familiarize ourselves with what WAR was and so we used the following websites:
 * https://www.beyondtheboxscore.com/2014/1/10/5291950/basic-sabermetrics-wins-above-replacement-war-fwar-bwar-warp
 * https://slate.com/culture/2015/04/war-defined-how-to-understand-baseballs-most-important-and-convoluted-stat.html
 * https://www.fangraphs.com/graphsw.aspx?playerid2=&playerid3=&playerid4=&playerid5=
@@ -28,6 +27,22 @@ At the beginning of the project, we had to familiarize ourselves with what WAR w
 
   ##### Data Visualization Tools
   * D3.js - https://d3js.org/
+
+### Using this project
+
+  The files in this folder include:
+  * top_300_players.csv
+  * code2.R - previous version of visualization
+  * baseballscrape.py - script that scrapes fangraphs.com for individual player's war values
+  * Top 300.png - png file that demonstrates Steve Wang's expectations
+
+  #### Data visualization
+  In order to access the visualization, use the prototype folder. Inside of the prototype folder are the following files:
+
+  * data - folder with the csv files with information about players
+  * index.html, style.css, main.js which create the website where the visualization lives
+
+
 
 ### Acknowledgments
 
