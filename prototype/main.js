@@ -11,7 +11,7 @@ const width = window.innerWidth,
 let data2 = [], cleanData = [], addData = [], // used in loading data
     highlightRows, allPlayers = [], // used in table
     sum, idArray = [], players2 = [], arr = [], kFiltered = [], warFiltered = [], finalDataArr = [], // used in calculateWar
-    found, hof = [], allHOF = [], pos = [], allPos = [], allPosFilt = [], allCurves = [];
+    tooltip, color, found, hof = [], allHOF = [], pos = [], allPos = [], allPosFilt = [], allCurves = [];
 
 /*****************************************************************************/
 // D3 ELEMENTS
@@ -48,20 +48,28 @@ const yScale = d3.scaleLinear()
 const xscale = d3.scaleLinear()
                  .domain([-2,15]) // domain for k that code2.r uses
                  .range([50, 0.6 * width]) // positioning axis from edge of window
-
+xscale.attr()
 const yscale = d3.scaleLinear()
                  .domain([0, 220])
                  .range([0.75 * height, 0])
 
 const x_axis = d3.axisBottom()
                  .scale(xscale)
-                 .ticks(32); // set number of ticks, determines scale
+                 .ticks(16)
+                 .tickSize(11); // set number of ticks, determines scale
+// d3.selectAll(".x_axis")
+//  .each(function(d, i){
+//    d3.select(this).style("font-size",30);
+//  });
+
+console.log(d3.selectAll(".x_axis"));
 
 const x_axis_translate = 0.75 * height // constant for moving x-axis
 
 const y_axis = d3.axisLeft()
                  .scale(yscale)
-                 .ticks(20);
+                 .ticks(15)
+                 .tickSize(11);
 
 const y_axis_translate = 50
 
@@ -96,7 +104,7 @@ svg.append('text')
    .attr('x',(-0.75*height)/2)
    .attr('y', 20)
    .attr('transform','rotate(270)')
-   .text('Wins Above k WAR')
+   .text('Wins above k WAR')
 
 /************************************/
 // create data table
@@ -233,75 +241,72 @@ function drawChart2(color, array){
 
   currVals.append("path").data(nestedArray)
           .attr('class','curves')
-          .attr('id', function(d) { return 'a-' + d.values[0].id;})
           .attr("d", function(d) { return lineFunction(d.values);}) // call earlier curve function
           .attr("stroke", color)
           .attr("stroke-width", 1.5)
           .attr("fill", "none")
-          .on('mouseover', function(d) { // mouseover changes color of curve, shows tooltip with name of player
-            makeToolTip();
-            tooltip.transition().duration(200)
-            .attr('id','tool1')
-            .style('opacity', .9)
-            tooltip.html(d.values[0].name)
-            .style('left', (d3.event.pageX+10) + 'px')
-            .style('top', (d3.event.pageY-50) + 'px')
-            d3.select(this)
-              .style('stroke', '#ff1f53')
-          })
-          .on('mouseout', function(d) {
-            tooltip.transition().duration(200)
-              .style('opacity', 0)
-            d3.select(this)
-              .style('stroke', color)
-          })
+          .on('mouseover', handleMouseOver) // mouseover changes color of curve, shows tooltip with name of player
+          .on('mouseout', handleMouseOut)
           .on('click', function(d) { // clicking on each curve highlights corresponding row in table
             for (var i = 0; i < 276; i++) {
               if (d.values[0].name == highlightRows[i][0]) {
-                d3.selectAll('tbody tr:nth-child(' + i + ')').style('background-color','#ff1f53');
+                d3.selectAll('tbody tr:nth-child(' + i + ')').style('background-color','#ff1f53').style('color','white');
               }
             }
           })
 
-
-
   // draws dots along curve for data points
   currVals.selectAll('.point').data(array)
         .enter().append('circle')
-        .attr('class','curves')
-        .attr('id','dots')
+        .attr('class','dots')
         .attr('cx', d => xScale(d.k))
         .attr('cy', d => yScale(d.war))
         .attr('r', 2)
-        .attr('fill', color)
-        .on('mouseover', function(d) { // mouseover changes color + size + shows coordinates
-          makeToolTip();
-          tooltip.transition().duration(50)
-          .attr('id','tool2')
-            .style('opacity', .9)
-          tooltip.html(d.k + ', ' + d.war)
-            .style('left', (d3.event.pageX+10) + 'px')
-            .style('top', (d3.event.pageY-50) + 'px')
-          d3.select(this)
-            .style('fill','#ff1f53')
-            .style('r', 4)
-        })
-        .on('mouseout', function(d) {
-          tooltip.transition().duration(50)
-            .style('opacity', 0)
-          d3.select(this)
-            .style('fill', color)
-            .style('r', 2)
-        })
+        .attr('fill', 'pink')
+        .attr('stroke', 'grey')
+        .on('mouseover', handleMouseOver)
+        .on('mouseout', handleMouseOut)
 
     currVals.exit()
           .attr('opacity',0)
           .remove();
-
 }
 
 /************************************/
-let tooltip;
+// handle mouse events for curves/points
+function handleMouseOver(d) {
+  makeToolTip();
+  tooltip.transition().duration(200)
+  .attr('id','tool1')
+  .style('opacity', .9)
+  if (this.getAttribute('class') == 'curves') {
+    tooltip.html(d.values[0].name)
+    d3.select(this)
+      .style('stroke', '#ff1f53')
+  } else {
+    tooltip.html(d.k + ', ' + d.war)
+    d3.select(this)
+      .style('fill','#ff1f53')
+      .style('r', 4)
+  }
+  tooltip.style('left', (d3.event.pageX+10) + 'px')
+  .style('top', (d3.event.pageY-50) + 'px')
+}
+
+function handleMouseOut(d) {
+  tooltip.transition().duration(200)
+    .style('opacity', 0)
+  if (this.getAttribute('class') == 'curves') {
+    d3.select(this)
+      .style('stroke', color)
+  } else {
+    d3.select(this)
+      .style('fill', color)
+      .style('r', 2)
+  }
+}
+
+/************************************/
 function makeToolTip() {
   // create tooltip for the curve and dots
   tooltip = d3.select('body')
@@ -317,12 +322,21 @@ function drawTable() {
 
         highlightRows = rows; // use for highlighting pattern on click for curves
 
+        for(let i=0;i<rows.length;i++){
+          rows[i].splice(1, 1);
+          if (rows[i][2] == "TRUE"){
+            rows[i][2] = "Yes"
+          } else{
+            rows[i][2] = "No"
+          }
+        }
+    console.log(rows[0])
     // headers
     table.append("thead").append("tr")
       .selectAll("th")
       .data(rows[0])
       .enter().append("th")
-      .text(function(d) { return d; })
+      .text(function(d) {  return d; })
 
     // data
     table.append("tbody")
@@ -369,37 +383,43 @@ function getAllPlayers(file){
 /*****************************************************************************/
 // LISTENERS
 // hof listener for checkbox
-d3.select('#hof-filter input').on('change', function() {
+d3.select('#hof-filter').on('change', function() {
   cb = d3.select(this);
   if(cb.property('checked')) {
-    updateGraph('#deeffc',allCurves);
-    updateGraph('#42aaff',allHOF); // if checkbox checked, highlight hof players
+    // filter out all hof player curves
+    d3.selectAll('.curves').filter(function(d) { return d.values[0].hof == 'FALSE'; }).style('stroke','#f0f0f0')
+    d3.selectAll('.dots').filter(function(d) { return d.hof == 'FALSE'; }).style('opacity','0.2')
   } else {
-    updateGraph('#42aaff',allCurves);
+    d3.selectAll('.curves').filter(function(d) { return d.values[0].hof == 'FALSE'; }).style('stroke','#42aaff')
+    d3.selectAll('.dots').filter(function(d) { return d.hof == 'FALSE'; }).style('opacity','1')
   }
 })
-
+// let unselected, unselected2, selected, selected2, count = 0;
 // position listener for drop-down
-d3.select('#pos-filter select').on('change', function() {
+d3.select('#pos-filter').on('change', function() {
+  // count += 1;
   item = d3.select(this).property('value'); // get drop-down selection
+  console.log(item)
   if(item != '') {
-    for (var i=0; i<allPos.length; i++) {
-      let temp = allPos[i].filter(function(d) { return d.pos == item});
-      if (temp.length > 0) {
-        allPosFilt.push(temp); // array of all players of that position
-      }
+    // if (count > 1) {
+    //   unselected.filter(function(d) { return d.values[0].pos == item; }).style('opacity','1')
+    // } else {
+      d3.selectAll('.curves').filter(function(d) { return d.values[0].pos == item; }).style('opacity','1')
+      d3.selectAll('.dots').filter(function(d) { return d.pos == item; }).style('opacity','1')
+      d3.selectAll('.curves').filter(function(d) { return d.values[0].pos != item; })
+      .style('opacity','0.2')
+      d3.selectAll('.dots').filter(function(d) { return d.pos != item; })
+      .style('opacity','0.2')
+    // }
 
-    }
-    updateGraph('#deeffc',allCurves);
-    updateGraph('#42aaff',allPosFilt);
-    allPosFilt = [];
   } else {
-    updateGraph('#42aaff',allCurves);
+    d3.selectAll('.curves').filter(function(d) { return d.values[0].pos != item; }).style('opacity','1')
+    d3.selectAll('.dots').filter(function(d) { return d.pos != item; }).style('opacity','1')
   }
 })
 
 // name listener for search bar
-d3.select("#name-filter input").on("change", function(){
+d3.select("#player-choice").on("change", function(){
    let txt = document.getElementById("player-choice").value;
    for (var i=0; i<allPos.length; i++) {
      let temp = allPos[i].filter(function(d) { return d.name == txt});
@@ -407,12 +427,18 @@ d3.select("#name-filter input").on("change", function(){
        allPosFilt.push(temp);
      }
    }
+   // d3.selectAll('.curves').filter(function(d) { return d.values[0].name == txt; })
+   // .style('stroke','#ff1f53')
+   // d3.selectAll('.dots').filter(function(d) { return d.name == txt; })
+   // .style('fill','#ff1f53')
    updateGraph('#ff1f53', allPosFilt)
    allPosFilt = []
 
  });
 
  // clear all listener
- d3.select('#restart button').on('click', function() {
-     updateGraph('#42aaff',allCurves);
+ d3.select('#restart').on('click', function() {
+    d3.selectAll('.curves').style('stroke','#42aaff').style('opacity','1')
+    d3.selectAll('.dots').style('fill','#42aaff').style('opacity','1')
+    d3.selectAll('tbody tr').style('background-color', 'white').style('color','black')
  })

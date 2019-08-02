@@ -8,41 +8,11 @@
 <body>
   <div class="fixed-header">
         <div class="container">
-            <h1>Baseball WAR Visualization</h1>
+            <h1>Visualizing Career and Peak WAR</h1>
         </div>
   </div>
 
-    <!-- <div class="fixed-footer">
-        <div class="container">Copyright &copy; 2016 Your Company</div>
-    </div> -->
-  <!-- <div id="restart">
-    <button>Clear All</button>
-  </div> -->
 
-  <div id="hof-filter"class="graph">
-    <input type='checkbox' class='checkbox'><label>Hall of Fame</label>
-  </div>
-
-  <div id="pos-filter"class="graph">
-    <select name="position">
-      <option value="" selected></option>
-      <option value="RF">RF</option>
-      <option value="LF">LF</option>
-      <option value="CF">CF</option>
-      <option value="SS">SS</option>
-      <option value="2B">2B</option>
-      <option value="OF">OF</option>
-      <option value="1B">1B</option>
-      <option value="3B">3B</option>
-      <option value="C">C</option>
-      <option value="DH">DH</option>
-    </select>
-  </div>
-
-  <div id="name-filter"class="graph">
-    <label for="player-filter">Choose a Player:</label>
-    <input list="player-filter" id="player-choice" name="player-choice" type="text"/>
-    <datalist id="player-filter"></datalist>
   </div>
 
   <div id="table" class="graph">
@@ -52,24 +22,58 @@
         <li>Hover over a dot to see that player's wins above k war value at that value of k</li>
         <li>Click on a curve to see that player highlighted in the table (you may need to scroll down in the table)</li>
         <li>Click on a row in the table to see that player's curve highlighted</li>
-        <li>Check the hall of fame box to see all hall of fame players (players not in hall of fame fade out)</li>
-        <li>Select a position from the dropdown to see all players that play that position (select the first blank option to deselect all positions)</li>
-        <li>Search for or choose a player in the text field to highlight their curve</li>
-        <li>Refresh the page to clear all highlighting</li>
+        <li>Check the Hall of Fame box to see all hall of fame players (players not in hall of fame fade out)</li>
+        <li>Select a position from the dropdown to see all players who play that position (select the first blank option to deselect all positions)</li>
+        <li>Search for or choose a player in the text field to highlight his curve</li>
+        <li>Refresh the page or click the Reset All button to clear all highlighting</li>
       </ol>
     </p>
   </div>
 
   <svg></svg>
 
+  <div id="filters-container">
+      <!-- <div id="restart" class="filters"> -->
+
+    <!-- </div> -->
+
+    <!-- <div id="hof-filter" class="filters"> -->
+      <input type='checkbox' class='checkbox' id="hof-filter"><label>Hall of Fame</label>
+    <!-- </div> -->
+
+    <!-- <div id="pos-filter" class="filters"> -->
+      <label for="pos-filter">Position:</label>
+      <select name="position" id="pos-filter">
+        <option value="" selected></option>
+        <option value="RF">RF</option>
+        <option value="LF">LF</option>
+        <option value="CF">CF</option>
+        <option value="SS">SS</option>
+        <option value="2B">2B</option>
+        <option value="OF">OF</option>
+        <option value="1B">1B</option>
+        <option value="3B">3B</option>
+        <option value="C">C</option>
+        <option value="DH">DH</option>
+      </select>
+    <!-- </div> -->
+
+    <!-- <div id="name-filter" class="filters"> -->
+      <label for="player-filter">Player:</label>
+      <input list="player-filter" id="player-choice" name="player-choice" type="text"/>
+      <datalist id="player-filter"></datalist>
+
+    <!-- </div> -->
+
+      <button type="button" id="restart">Reset All</button>
+  </div>
 
   <h3 id="title">What is WAR?</h3>
   <div class="content boxed center-div">
     <p>
-    WAR stands for Wins Above Replacement. It is used as a metric for determining the value that a player
+    WAR stands for Wins above Replacement. It is used as a metric for determining the value that a player
   has to a team. The higher a player's WAR value is, the more valuable they are to the team for which they play.
   There are 3 different ways to calculate a player's WAR score. This project uses FanGraph's WAR
-
     </p>
   </div>
 
