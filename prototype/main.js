@@ -263,7 +263,8 @@ function drawChart2(color, array){
         .attr('cx', d => xScale(d.k))
         .attr('cy', d => yScale(d.war))
         .attr('r', 2)
-        .attr('fill', color)
+        .attr('fill', 'pink')
+        .attr('stroke', 'grey')
         .on('mouseover', handleMouseOver)
         .on('mouseout', handleMouseOut)
 
@@ -321,7 +322,15 @@ function drawTable() {
         table = d3.select('#table').append('table')
 
         highlightRows = rows; // use for highlighting pattern on click for curves
-        // rows[0].splice(1, 1);
+
+        for(let i=0;i<rows.length;i++){
+          rows[i].splice(1, 1);
+          if (rows[i][2] == "TRUE"){
+            rows[i][2] = "Yes"
+          } else{
+            rows[i][2] = "No"
+          }
+        }
     console.log(rows[0])
     // headers
     table.append("thead").append("tr")
@@ -382,7 +391,7 @@ d3.select('#hof-filter').on('change', function() {
     d3.selectAll('.curves').filter(function(d) { return d.values[0].hof == 'FALSE'; }).style('stroke','#f0f0f0')
     d3.selectAll('.dots').filter(function(d) { return d.hof == 'FALSE'; }).style('opacity','0.2')
   } else {
-    d3.selectAll('.curves').filter(function(d) { return d.values[0].hof == 'FALSE'; }).style('opacity','1')
+    d3.selectAll('.curves').filter(function(d) { return d.values[0].hof == 'FALSE'; }).style('stroke','#42aaff')
     d3.selectAll('.dots').filter(function(d) { return d.hof == 'FALSE'; }).style('opacity','1')
   }
 })
@@ -431,6 +440,6 @@ d3.select("#player-choice").on("change", function(){
  // clear all listener
  d3.select('#restart').on('click', function() {
     d3.selectAll('.curves').style('stroke','#42aaff').style('opacity','1')
-    d3.selectAll('.dots').style('fill','#42aaff').style('opacity','1')
+    d3.selectAll('.dots').style('fill','pink').style("stroke","grey").style('opacity','1')
     d3.selectAll('tbody tr').style('background-color', 'white').style('color','black')
  })
