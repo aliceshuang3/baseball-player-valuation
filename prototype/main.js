@@ -48,7 +48,7 @@ const yScale = d3.scaleLinear()
 const xscale = d3.scaleLinear()
                  .domain([-2,15]) // domain for k that code2.r uses
                  .range([50, 0.6 * width]) // positioning axis from edge of window
-
+xscale.attr()
 const yscale = d3.scaleLinear()
                  .domain([0, 220])
                  .range([0.75 * height, 0])
@@ -439,6 +439,6 @@ d3.select("#player-choice").on("change", function(){
  // clear all listener
  d3.select('#restart').on('click', function() {
     d3.selectAll('.curves').style('stroke','#42aaff').style('opacity','1')
-    d3.selectAll('.dots').style('fill','#pink').style("stroke","grey").style('opacity','1')
+    d3.selectAll('.dots').style('fill','#42aaff').style('opacity','1')
     d3.selectAll('tbody tr').style('background-color', 'white').style('color','black')
  })
