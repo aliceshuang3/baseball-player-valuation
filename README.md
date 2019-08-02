@@ -33,5 +33,4 @@ At the beginning of the project, we had to familiarize ourselves with what WAR w
 
 This project was funded by the Swarthmore Projects for Educational Exploration and Development (SPEED) program at Swarthmore College.
 
-
-
+We'd like to thank Nabil Kashyap,  Doug Willen, the Swarthmore Librarians, and the rest of Swarthmore ITS for continuously supporting the SPEED interns throughout the creation of this project. We'd also like to thank Steve Wang for proposing the project.
