@@ -115,6 +115,7 @@ drawTable();
 
 // loads data for a big csv data file
 function loadBigData(file) {
+  console.log("hi")
   d3.csv(file, function(d){
     // put all player ids in an array for parsing
     idArray.push(Number(d.id));
@@ -135,7 +136,7 @@ function loadBigData(file) {
 // load additional top 300 player data
 function loadBigData2(file) {
   d3.csv(file, function(d) {
-
+    console.log(d);
     return {
       name: d.Name.trim(),
       id1: Number(d.FGL.trim()),
